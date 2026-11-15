@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sign In | Fred's Auto Electrical</title>
+
+    <!-- Tailwind CSS (development only) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .page-background {
+            background-color: #0C1012;
+            background-image:
+                linear-gradient(
+                    rgba(37,191,173,0.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(37,191,173,0.035) 1px,
+                    transparent 1px
+                ),
+                radial-gradient(
+                    ellipse at 50% 30%,
+                    rgba(37,191,173,0.08),
+                    transparent 65%
+                );
+
+            background-size:
+                40px 40px,
+                40px 40px,
+                100% 100%;
+        }
+    </style>
+</head>
+
+<body class="page-background min-h-screen
+             flex items-center justify-center
+             text-white p-4">
+
+    <!-- Sign In Card -->
+    <main class="w-full max-w-[400px]
+                 bg-[#171B21]
+                 border border-[#293038]
+                 rounded-xl shadow-2xl
+                 p-7 sm:p-8">
+
+        <!-- Heading -->
+        <h2 class="text-xl font-semibold mb-1">
+            Sign in to your account
+        </h2>
+
+        <p class="text-xs text-[#9CB1C2] mb-8">
+            Fred's Auto Electrical Portal Access
+        </p>
+
+        <!-- Login Form -->
+        <form id="login-form">
+
+            <!-- Email -->
+            <div class="mb-5">
+                <label for="email"
+                       class="block text-sm font-medium mb-2">
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    autocomplete="username"
+                    placeholder="Enter your email"
+                    required
+                    class="w-full p-3
+                           bg-[#1B2028]
+                           border border-[#303846]
+                           rounded-md text-white text-sm
+                           outline-none
+                           focus:border-[#25BFAD]"
+                >
+            </div>
+
+            <!-- Password -->
+            <div class="mb-6">
+                <label for="password"
+                       class="block text-sm font-medium mb-2">
+                    Password
+                </label>
+
+                <div class="relative">
+
+                    <input
+                        type="password"
+                        id="password"
+                        autocomplete="current-password"
+                        placeholder="Enter your password"
+                        required
+                        class="w-full p-3 pr-12
+                               bg-[#1B2028]
+                               border border-[#303846]
+                               rounded-md text-white text-sm
+                               outline-none
+                               focus:border-[#25BFAD]"
+                    >
+
+                    <!-- Eye Icon -->
+                    <button
+                        type="button"
+                        id="toggle-password"
+                        aria-label="Show password"
+                        class="absolute right-3 top-1/2
+                               -translate-y-1/2
+                               text-[#91A5B9]
+                               hover:text-[#25BFAD]">
+
+                        <i data-lucide="eye"
+                           id="eye-icon"></i>
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <p id="error-message"
+               role="alert"
+               class="hidden text-red-400 text-xs mb-4">
+            </p>
+
+            <!-- Sign In Button -->
+            <button
+                type="submit"
+                id="signin-button"
+                class="w-full py-3
+                       bg-[#25BFAD] text-black
+                       font-semibold text-sm
+                       rounded-md
+                       hover:bg-[#27847C]
+                       disabled:opacity-50
+                       transition-colors">
+
+                Sign in
+            </button>
+
+        </form>
+
+        <!-- Footer -->
+        <div class="text-center mt-7 text-xs">
+            <span class="text-[#91A5B9]">
+                Forgot your password?
+            </span>
+
+            <span class="text-[#25BFAD]">
+                Contact your admin.
+            </span>
+        </div>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script type="module">
+
+        import { createClient } from
+        "https://esm.sh/@supabase/supabase-js@2";
+
+        // SUPABASE CONFIGURATION
+        const SUPABASE_URL =
+            "https://pbkwwvnmlpaubrhomhnc.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_IG1ZQGq8Qk7wpaTIyqxqIA_EgjwWIwX";
+
+        const supabase = createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+        // Initialize icons
+        lucide.createIcons();
+
+        // PASSWORD VISIBILITY
+        const passwordInput =
+            document.getElementById("password");
+
+        const toggleButton =
+            document.getElementById("toggle-password");
+
+        toggleButton.addEventListener("click", () => {
+
+            const isHidden =
+                passwordInput.type === "password";
+
+            passwordInput.type =
+                isHidden ? "text" : "password";
+
+            toggleButton.setAttribute(
+                "aria-label",
+                isHidden ? "Hide password" : "Show password"
+            );
+
+            document.getElementById("eye-icon")
+                .setAttribute(
+                    "data-lucide",
+                    isHidden ? "eye-off" : "eye"
+                );
+
+            lucide.createIcons();
+        });
+
+        // LOGIN FUNCTION
+        const loginForm =
+            document.getElementById("login-form");
+
+        const errorMessage =
+            document.getElementById("error-message");
+
+        const signinButton =
+            document.getElementById("signin-button");
+
+        loginForm.addEventListener(
+            "submit",
+            async (event) => {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("email")
+                        .value.trim();
+
+                const password =
+                    passwordInput.value;
+
+                errorMessage.classList.add("hidden");
+
+                signinButton.disabled = true;
+                signinButton.textContent = "Signing in...";
+
+                try {
+
+                    // Authenticate with Supabase
+                    const { data, error } =
+                        await supabase.auth
+                            .signInWithPassword({
+                                email,
+                                password
+                            });
+
+                    if (error) throw error;
+
+                    // Fetch employee profile
+                    const { data: profile, error: profileError } =
+                        await supabase
+                            .from("profiles")
+                            .select("role, is_active,must_set_password")
+                            .eq("profile_id", data.user.id)
+                            .single();
+
+                    console.log("Authenticated user ID:", data.user.id);        
+                    console.log("Profile found:", profile);
+                    console.log("Profile error:", profileError);
+
+                    if (profileError || !profile) {
+                        console.error("SUPABASE ERROR:", profileError);
+                        throw new Error(
+                            "Employee profile not found."
+                        );
+                    }
+
+                    if (profile.must_set_password) {
+                        await supabase.auth.signOut();
+
+                        showMessage(
+                            "Your account has not been activated. Please use your invitation email to set your password."
+                        );
+
+                        return;
+                    }
+
+                    if (!profile.is_active) {
+                        throw new Error(
+                            "Your account is inactive."
+                        );
+                    }
+
+                    // Redirect based on role
+                    if (profile.role === "admin") {
+
+                        window.location.replace(
+                            "admin/dashboard.html"
+                        );
+
+                    } else if (profile.role === "staff") {
+
+                        window.location.replace(
+                            "staff/dashboard.html"
+                        );
+
+                    } else {
+                        throw new Error(
+                            "Invalid employee role."
+                        );
+                    }
+
+                } catch (error) {
+
+                     console.error("LOGIN ERROR:", error);
+
+                     errorMessage.textContent =
+                        error.message || "An unknown error occurred.";
+
+                      errorMessage.classList.remove("hidden");
+
+                      await supabase.auth.signOut();
+
+                } finally {
+
+                    signinButton.disabled = false;
+                    signinButton.textContent = "Sign in";
+                }
+            }
+        );
+
+    </script>
+
+</body>
+</html>

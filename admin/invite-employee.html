@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invite Employee | Fred's Auto Electrical</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: #0d1414;
+            font-family: Arial, sans-serif;
+        }
+
+        .invite-card {
+            background: #202223;
+            border-radius: 7px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invite-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(
+                to right,
+                #25c5a8,
+                #2778e5
+            );
+        }
+
+        .form-input {
+            width: 100%;
+            background: #101617;
+            border: 1px solid #41494b;
+            border-radius: 4px;
+            padding: 11px 12px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #32a99c;
+        }
+
+        .form-input::placeholder {
+            color: #687678;
+        }
+
+        .form-label {
+            color: #f1f5f5;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .form-hint {
+            color: #82969a;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+        }
+
+        .submit-button {
+            width: 100%;
+            background: #347c75;
+            color: #e7f8f5;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .submit-button:hover {
+            background: #40988f;
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center px-4 py-8">
+
+    <div class="invite-card w-full max-w-sm px-7 py-7 shadow-2xl">
+
+        <!-- Branding -->
+        <div class="mb-9">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-md bg-teal-900/40 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="19" height="19"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="#40c5ae"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 17.6V21h3.4l6.3-6.3a4 4 0 0 0 5.4-5.4L15 12l-3-3z"/>
+                    </svg>
+                </div>
+                <span class="text-white text-xs font-bold">
+                    Fred's Auto Electrical
+                </span>
+            </div>
+        </div>
+
+        <!-- Heading -->
+        <div class="mb-7">
+            <h1 class="text-white text-xl font-bold mb-1">
+                Invite employee
+            </h1>
+
+            <p class="text-xs text-teal-100/80 leading-relaxed">
+                Send an invitation to activate an employee account.
+            </p>
+        </div>
+
+        <!-- Invitation Form -->
+        <form id="inviteForm" class="space-y-5">
+
+            <!-- Full Name -->
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="fullName" class="form-label">
+                        Full name
+                    </label>
+                    <span class="form-hint">REQUIRED</span>
+                </div>
+
+                <input
+                    id="fullName"
+                    type="text"
+                    required
+                    maxlength="100"
+                    autocomplete="name"
+                    class="form-input"
+                    placeholder="Employee's full name"
+                >
+            </div>
+
+            <!-- Email -->
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="email" class="form-label">
+                        Email address
+                    </label>
+                    <span class="form-hint">REQUIRED</span>
+                </div>
+
+                <input
+                    id="email"
+                    type="email"
+                    required
+                    maxlength="150"
+                    autocomplete="email"
+                    class="form-input"
+                    placeholder="employee@example.com"
+                >
+
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                    An activation link will be sent to this email.
+                </p>
+            </div>
+
+            <!-- Role -->
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="role" class="form-label">
+                        Employee role
+                    </label>
+                    <span class="form-hint">SELECT ROLE</span>
+                </div>
+
+                <select id="role" class="form-input" required>
+                    <option value="staff">Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <!-- Submit -->
+            <div class="pt-3">
+                <button
+                    id="inviteButton"
+                    type="submit"
+                    class="submit-button flex items-center justify-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="15" height="15"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="m22 7-10 6L2 7"/>
+                    </svg>
+
+                    <span id="buttonText">Send invitation</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Feedback -->
+        <p id="message"
+           role="status"
+           aria-live="polite"
+           class="mt-4 text-xs leading-relaxed">
+        </p>
+
+        <!-- Footer -->
+        <div class="mt-7 pt-5 border-t border-white/10 text-center">
+            <a href="dashboard.html"
+               class="text-xs text-slate-400 hover:text-teal-300 transition">
+                ← Back to dashboard
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Supabase functionality -->
+    <script type="module">
+        import { createClient } from
+            "https://esm.sh/@supabase/supabase-js@2";
+
+        const supabase = createClient(
+            "https://pbkwwvnmlpaubrhomhnc.supabase.co",
+            "sb_publishable_IG1ZQGq8Qk7wpaTIyqxqIA_EgjwWIwX"
+        );
+
+        const form = document.getElementById("inviteForm");
+        const button = document.getElementById("inviteButton");
+        const buttonText = document.getElementById("buttonText");
+        const message = document.getElementById("message");
+
+        function showMessage(text, success = false) {
+            message.textContent = text;
+            message.className = success
+                ? "mt-4 text-xs text-teal-400 leading-relaxed"
+                : "mt-4 text-xs text-red-400 leading-relaxed";
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            button.disabled = true;
+            buttonText.textContent = "Sending...";
+            message.textContent = "";
+
+            try {
+                const { data: { session }, error: sessionError } =
+                    await supabase.auth.getSession();
+
+                if (sessionError || !session) {
+                    throw new Error("Please log in as admin first.");
+                }
+
+                const { data, error } =
+                    await supabase.functions.invoke(
+                        "invite-employee",
+                        {
+                            body: {
+                                full_name: document
+                                    .getElementById("fullName")
+                                    .value.trim(),
+
+                                email: document
+                                    .getElementById("email")
+                                    .value.trim(),
+
+                                role: document
+                                    .getElementById("role")
+                                    .value
+                            }
+                        }
+                    );
+
+                if (error) {
+                    const response = error.context;
+
+                    if (
+                        response &&
+                        typeof response.json === "function"
+                    ) {
+                        const details = await response.json();
+
+                        throw new Error(
+                            details.error || error.message
+                        );
+                    }
+
+                    throw error;
+                }
+
+                if (!data?.success) {
+                    throw new Error(
+                        data?.error || "Invitation failed."
+                    );
+                }
+
+                showMessage(
+                    "Invitation sent successfully! The employee can check their email.",
+                    true
+                );
+
+                form.reset();
+
+            } catch (error) {
+                console.error("Invitation error:", error);
+
+                showMessage(
+                    error.message || "Unable to send invitation."
+                );
+
+            } finally {
+                button.disabled = false;
+                buttonText.textContent = "Send invitation";
+            }
+        });
+    </script>
+
+</body>
+</html>
