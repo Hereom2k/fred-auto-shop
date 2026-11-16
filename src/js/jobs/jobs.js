@@ -8,7 +8,7 @@ const statuses = {
     in_progress:      { label: "In Progress",      pill: "status-in-progress",    dot: "bg-status-in-progress" },
     awaiting_parts:   { label: "Awaiting Parts",   pill: "status-awaiting-parts", dot: "bg-status-awaiting-parts" },
     not_started:      { label: "Not Started",      pill: "status-not-started",    dot: "bg-status-not-started" },
-    ready_for_pickup: { label: "Ready",            pill: "status-ready",          dot: "bg-status-ready" },
+    ready_for_pickup: { label: "Ready for Pickup",            pill: "status-ready",          dot: "bg-status-ready" },
     delivered:        { label: "Delivered",        pill: "status-delivered",      dot: "bg-status-delivered" },
 };
 

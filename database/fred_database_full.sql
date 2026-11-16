@@ -17,6 +17,7 @@ CREATE TABLE profiles (
   email      varchar(150) NOT NULL UNIQUE,
   role       user_role NOT NULL DEFAULT 'staff',
   is_active  boolean NOT NULL DEFAULT true,
+  must_set_password boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -440,3 +441,19 @@ CREATE POLICY job_photos_storage_update ON storage.objects FOR UPDATE TO authent
   USING (bucket_id = 'job-photos' AND public.is_admin());
 CREATE POLICY job_photos_storage_delete ON storage.objects FOR DELETE TO authenticated
   USING (bucket_id = 'job-photos' AND public.is_admin());
+
+
+-- ----------------------------------------------------------------------------
+-- section 10: table permissions
+-- signed-in users can use the tables; row level security still decides which rows
+-- nothing is granted to anon, so signed-out visitors get nothing
+-- ----------------------------------------------------------------------------
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+
+-- tables created later get the same permissions automatically
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to authenticated;
+alter default privileges in schema public
+  grant usage, select on sequences to authenticated;
