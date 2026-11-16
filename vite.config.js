@@ -8,6 +8,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'index.html'),       // add other pgs later
+                jobs: resolve(__dirname, 'pages/jobs.html'),
+                jobDetails: resolve(__dirname, 'pages/job-details.html'),
             },
         },
     },
