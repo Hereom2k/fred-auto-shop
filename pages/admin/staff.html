@@ -1,0 +1,67 @@
+<!-- STAFF MANAGEMENT -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Management</title>
+    <link rel="stylesheet" href="../../src/css/main.css" />
+</head>
+<body>
+    <!-- invite employee card -->
+    <section class="card relative w-full max-w-sm overflow-hidden p-7">
+    <!-- gradient strip along the top -->
+    <div class="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-accent to-secondary-500"></div>
+
+    <h2 class="mb-1 font-display text-xl font-bold text-ink">Invite employee</h2>
+    <p class="mb-7 text-xs leading-relaxed text-muted">Send an invitation to activate an employee account.</p>
+
+    <form id="inviteForm" class="space-y-5">
+        <div>
+        <div class="mb-2 flex items-center justify-between">
+            <label for="inviteFullName" class="text-xs font-semibold text-ink">Full name</label>
+            <span class="text-[10px] font-semibold tracking-wide text-muted">REQUIRED</span>
+        </div>
+        <input id="inviteFullName" type="text" required maxlength="100" autocomplete="name"
+                class="field" placeholder="Employee's full name">
+        </div>
+
+        <div>
+        <div class="mb-2 flex items-center justify-between">
+            <label for="inviteEmail" class="text-xs font-semibold text-ink">Email address</label>
+            <span class="text-[10px] font-semibold tracking-wide text-muted">REQUIRED</span>
+        </div>
+        <input id="inviteEmail" type="email" required maxlength="150" autocomplete="email"
+                class="field" placeholder="employee@example.com">
+        <p class="mt-2 text-xs leading-relaxed text-muted">An activation link will be sent to this email.</p>
+        </div>
+
+        <div>
+        <div class="mb-2 flex items-center justify-between">
+            <label for="inviteRole" class="text-xs font-semibold text-ink">Employee role</label>
+            <span class="text-[10px] font-semibold tracking-wide text-muted">SELECT ROLE</span>
+        </div>
+        <select id="inviteRole" class="field" required>
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+        </select>
+        </div>
+
+        <div class="pt-3">
+        <button id="inviteButton" type="submit" class="btn btn-primary w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>
+            </svg>
+            <span id="inviteButtonText">Send invitation</span>
+        </button>
+        </div>
+    </form>
+
+    <p id="inviteMessage" role="status" aria-live="polite" class="mt-4 text-xs leading-relaxed"></p>
+    </section>
+
+    <script type="module" src="/src/js/admin/staff.js"></script>
+</body>
+</html>

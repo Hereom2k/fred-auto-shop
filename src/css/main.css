@@ -1,1 +1,192 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap");
 @import "tailwindcss";
+
+/* =========================================================
+    layer 1: the palette (raw colour scales)
+    500/600 is the main swatch, lower numbers are lighter,
+    higher numbers are darker
+   ========================================================= */
+@theme {
+    /* primary: teal #14B8A6 */
+    --color-primary-50: #f0fdfa;
+    --color-primary-100: #ccfbf1;
+    --color-primary-200: #99f6e4;
+    --color-primary-300: #5eead4;
+    --color-primary-400: #2dd4bf;
+    --color-primary-500: #14b8a6;
+    --color-primary-600: #0d9488;
+    --color-primary-700: #0f766e;
+    --color-primary-800: #115e59;
+    --color-primary-900: #134e4a;
+    --color-primary-950: #042f2e;
+
+    /* secondary: blue #2563EB */
+    --color-secondary-50: #eff6ff;
+    --color-secondary-100: #dbeafe;
+    --color-secondary-200: #bfdbfe;
+    --color-secondary-300: #93c5fd;
+    --color-secondary-400: #60a5fa;
+    --color-secondary-500: #3b82f6;
+    --color-secondary-600: #2563eb;
+    --color-secondary-700: #1d4ed8;
+    --color-secondary-800: #1e40af;
+    --color-secondary-900: #1e3a8a;
+    --color-secondary-950: #172554;
+
+    /* tertiary: violet #8B5CF6 */
+    --color-tertiary-50: #f5f3ff;
+    --color-tertiary-100: #ede9fe;
+    --color-tertiary-200: #ddd6fe;
+    --color-tertiary-300: #c4b5fd;
+    --color-tertiary-400: #a78bfa;
+    --color-tertiary-500: #8b5cf6;
+    --color-tertiary-600: #7c3aed;
+    --color-tertiary-700: #6d28d9;
+    --color-tertiary-800: #5b21b6;
+    --color-tertiary-900: #4c1d95;
+    --color-tertiary-950: #2e1065;
+
+    /* neutral: #18191A (replaces tailwind's own neutral scale) */
+    --color-neutral-50: #f5f5f6;
+    --color-neutral-100: #e6e7e8;
+    --color-neutral-200: #cfd1d3;
+    --color-neutral-300: #adb0b4;
+    --color-neutral-400: #85898f;
+    --color-neutral-500: #6a6e74;
+    --color-neutral-600: #4f5358;
+    --color-neutral-700: #3a3d41;
+    --color-neutral-800: #26282b;
+    --color-neutral-850: #1f2023;
+    --color-neutral-900: #18191a;
+    --color-neutral-950: #0f1011;
+
+    /* fonts */
+    --font-display: "Space Grotesk", sans-serif; /* headlines */
+    --font-sans: "Inter", sans-serif; /* body and labels */
+    --font-mono: "JetBrains Mono", monospace; /* plate numbers */
+}
+
+/* =========================================================
+    layer 2: names by job (use these in the html)
+    to restyle the app, change these, not the html
+   ========================================================= */
+@theme {
+    /* backgrounds */
+    --color-app: var(--color-neutral-950); /* page background */
+    --color-surface: var(--color-neutral-900); /* cards, sidebar, top bar */
+    --color-raised: var(--color-neutral-800); /* chips, inputs, hover rows */
+
+    --color-inset: var(--color-neutral-850);
+
+    --color-table-head: #1e2126; /* table header row */
+
+    --color-row: #181a1e; /* odd table rows */
+    --color-row-alt: #1b1d21; /* even table rows */
+
+    /* borders */
+    --color-line: var(--color-neutral-800);
+    --color-line-strong: var(--color-neutral-700);
+
+    /* text */
+    --color-ink: var(--color-neutral-100); /* main text */
+    --color-muted: var(--color-neutral-400); /* secondary text, placeholders */
+
+    /* brand */
+    --color-accent: var(--color-primary-400);
+    --color-accent-hover: var(--color-primary-300);
+
+    /* job statuses (keys match the status values in the database) */
+    --color-status-not-started: var(--color-neutral-300);
+    --color-status-in-progress: var(--color-secondary-400);
+    --color-status-awaiting-parts: #fbbf24; /* amber */
+    --color-status-overdue: #f87171; /* red */
+    --color-status-ready: var(--color-tertiary-400);
+    --color-status-delivered: var(--color-primary-400);
+}
+
+/* =========================================================
+    layer 3: reusable pieces
+   ========================================================= */
+body {
+    @apply bg-app text-ink font-sans;
+}
+
+/* sign-in page background: faint teal grid with a glow near the top */
+@utility auth-background {
+    background-image:
+        linear-gradient(
+            color-mix(in oklab, var(--color-accent) 4%, transparent) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            color-mix(in oklab, var(--color-accent) 4%, transparent) 1px,
+            transparent 1px
+        ),
+        radial-gradient(
+            ellipse at 50% 30%,
+            color-mix(in oklab, var(--color-accent) 8%, transparent),
+            transparent 65%
+        );
+    background-size:
+        40px 40px,
+        40px 40px,
+        100% 100%;
+}
+
+@utility card {
+    @apply bg-surface border border-line rounded-xl;
+}
+
+/* buttons: use as class="btn btn-primary" */
+@utility btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+}
+@utility btn-primary {
+    @apply bg-accent text-neutral-950 hover:bg-accent-hover;
+}
+@utility btn-secondary {
+    @apply bg-raised text-ink hover:bg-neutral-700;
+}
+@utility btn-inverted {
+    @apply bg-neutral-100 text-neutral-900 hover:bg-white;
+}
+@utility btn-outlined {
+    @apply border border-neutral-300 text-ink hover:bg-raised;
+}
+@utility btn-danger {
+    @apply bg-red-400 text-neutral-950 hover:bg-red-300;
+}
+
+/* text inputs and selects */
+@utility field {
+    @apply w-full bg-inset border border-line-strong rounded-lg px-3 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-accent;
+}
+
+/* status pills: use as class="pill status-overdue" */
+@utility pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wide;
+}
+@utility status-not-started {
+    @apply text-status-not-started bg-status-not-started/10 border-status-not-started/40;
+}
+@utility status-in-progress {
+    @apply text-status-in-progress bg-status-in-progress/10 border-status-in-progress/40;
+}
+@utility status-awaiting-parts {
+    @apply text-status-awaiting-parts bg-status-awaiting-parts/10 border-status-awaiting-parts/40;
+}
+@utility status-overdue {
+    @apply text-status-overdue bg-status-overdue/10 border-status-overdue/40;
+}
+@utility status-ready {
+    @apply text-status-ready bg-status-ready/10 border-status-ready/40;
+}
+@utility status-delivered {
+    @apply text-status-delivered bg-status-delivered/10 border-status-delivered/40;
+}
+
+/* plate number badge */
+@utility plate {
+    @apply font-mono text-xs font-semibold tracking-wider px-2 py-1 rounded bg-raised border border-line-strong text-ink;
+}

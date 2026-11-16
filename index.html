@@ -5,10 +5,65 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>fred-auto-shop</title>
+    <title>Sign in</title>
+    <link rel="stylesheet" href="/src/css/main.css" />
   </head>
-  <body>
-    <h1 class="text-3xl font-bold text-blue-600">Sign in page coming soon</h1>
-    <script type="module" src="/src/js/shared/init.js"></script>
+
+  <body class="auth-background flex min-h-screen items-center justify-center p-4">
+
+    <!-- sign in card -->
+    <main class="card w-full max-w-100 p-7 shadow-2xl sm:p-8">
+      <h1 class="mb-1 font-display text-xl font-semibold">Sign in to your account</h1>
+      <p class="mb-8 text-xs text-muted">Fred's Auto Electrical Portal Access</p>
+
+      <form id="login-form">
+        <!-- email -->
+        <div class="mb-5">
+          <label for="email" class="mb-2 block text-sm font-medium">Email address</label>
+          <input id="email" type="email" autocomplete="username" placeholder="Enter your email"
+                required class="field py-3">
+        </div>
+
+        <!-- password with show/hide button -->
+        <div class="mb-6">
+          <label for="password" class="mb-2 block text-sm font-medium">Password</label>
+          <div class="relative">
+            <input id="password" type="password" autocomplete="current-password"
+                  placeholder="Enter your password" required class="field py-3 pr-12">
+
+            <button type="button" id="toggle-password" aria-label="Show password"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-muted hover:text-accent">
+              <!-- eye icon -->
+              <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <!-- eye with a line through it -->
+              <svg id="eye-closed" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+                <path d="m2 2 20 20"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- error message -->
+        <p id="error-message" role="alert" class="mb-4 hidden text-xs text-status-overdue"></p>
+
+        <button type="submit" id="signin-button" class="btn btn-primary w-full py-3">Sign in</button>
+      </form>
+
+      <p class="mt-7 text-center text-xs">
+        <span class="text-muted">Forgot your password?</span>
+        <span class="text-accent">Contact your admin.</span>
+      </p>
+    </main>
+
+    <script type="module" src="/src/js/auth/login.js"></script>
   </body>
 </html>
