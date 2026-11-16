@@ -120,7 +120,7 @@ function renderChips() {
         return `
         <button data-status="${key}"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wide uppercase transition
-          ${selected ? "bg-accent text-neutral-950" : "bg-inset text-neutral-300 hover:bg-raised"}">
+          ${selected ? "bg-accent text-neutral-950" : "bg-inset text-ink/75 hover:bg-raised"}">
           ${dot}${label} (${count})
         </button>`;
     };
@@ -154,7 +154,7 @@ function renderTable() {
             return `
       <tr data-id="${j.id}" class="group odd:bg-row even:bg-row-alt hover:bg-raised/60 cursor-pointer transition">
         <td class="px-5 py-4">
-          <p class="text-white text-sm leading-snug line-clamp-2">${escapeHtml(j.problem)}</p>
+          <p class="text-ink text-sm leading-snug line-clamp-2">${escapeHtml(j.problem)}</p>
         </td>
         <td class="px-5 py-4 text-sm font-semibold">${escapeHtml(j.customer)}</td>
         <td class="px-5 py-4">
@@ -198,15 +198,15 @@ function renderFooter(total, start, shown, totalPages) {
     // left side text
     showingText.innerHTML =
         total === 0
-            ? `Showing <span class="font-semibold text-white">0</span>`
-            : `Showing <span class="font-semibold text-white">${start + 1}–${start + shown}</span>
-         of <span class="font-semibold text-white">${total}</span>`;
+            ? `Showing <span class="font-semibold text-ink">0</span>`
+            : `Showing <span class="font-semibold text-ink">${start + 1}–${start + shown}</span>
+         of <span class="font-semibold text-ink">${total}</span>`;
 
     // one page button
     const pageBtn = (content, page, { current = false, disabled = false } = {}) => `
       <button data-page="${page}" ${disabled ? "disabled" : ""}
         class="min-w-10 h-10 px-3 flex items-center justify-center border-l border-line-strong first:border-l-0 transition
-        ${current ? "bg-raised text-white font-semibold" : "text-muted hover:bg-raised hover:text-ink"}
+        ${current ? "bg-raised text-ink font-semibold" : "text-muted hover:bg-raised hover:text-ink"}
         disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent">
         ${content}
       </button>`;

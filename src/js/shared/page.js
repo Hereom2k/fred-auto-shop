@@ -1,5 +1,5 @@
 // runs at the top of every logged-in page
-// checks the login, loads the user's profile and draws the sidebar
+// checks the login, loads the user's profile and draws the sidebar and top bar
 //
 // usage:
 //   import { initPage } from "../shared/page.js";
@@ -8,6 +8,7 @@
 
 import { supabase } from "../lib/supabase.js";
 import { renderSidebar } from "./sidebar.js";
+import { renderTopbar } from "./topbar.js";
 
 // the sign in page is the root index.html
 const SIGN_IN_PAGE = "/";
@@ -76,6 +77,7 @@ export async function initPage({ active, adminOnly = false } = {}) {
         name: profile.full_name,
         onSignOut: signOut,
     });
+    renderTopbar();
 
     if (adminOnly && profile.role !== "admin") {
         showAccessDenied(profile.role);

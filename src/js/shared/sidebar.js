@@ -104,13 +104,6 @@ export function renderSidebar({ active, role = "staff", name = "", onSignOut } =
         : "";
 
     const html = `
-        <!-- mobile open button (the top bar can reuse data-sidebar-open later) -->
-        <button type="button" data-sidebar-open
-                class="md:hidden fixed top-3 left-3 z-30 p-2 rounded-lg bg-surface border border-line text-ink"
-                aria-label="Open menu">
-            ${icon("menu", "size-5")}
-        </button>
-
         <!-- dark backdrop behind the sidebar on mobile -->
         <div data-sidebar-backdrop class="hidden md:hidden fixed inset-0 z-40 bg-black/60"></div>
 
@@ -145,7 +138,7 @@ export function renderSidebar({ active, role = "staff", name = "", onSignOut } =
             <!-- logged in user -->
             <div class="border-t border-line p-3 shrink-0">
                 <div class="flex items-center gap-3 px-2 py-2 rounded-lg bg-raised/60 md:px-0.5 md:group-hover/sidebar:px-2 md:group-focus-within/sidebar:px-2 transition-[padding] duration-200">
-                    <span class="size-9 shrink-0 rounded-full bg-neutral-700 text-ink text-xs font-bold flex items-center justify-center">
+                    <span class="size-9 shrink-0 rounded-full bg-accent/15 text-accent text-xs font-bold flex items-center justify-center">
                         ${escapeHtml(getInitials(name))}
                     </span>
                     <div class="min-w-0 ${FADE}">
@@ -190,7 +183,7 @@ function wireUpMobileToggle() {
         document.body.classList.remove("overflow-hidden");
     };
 
-    // any button with data-sidebar-open works, so the top bar can use it too
+    // the menu button in the top bar has data-sidebar-open
     document.addEventListener("click", (event) => {
         if (event.target.closest("[data-sidebar-open]")) open();
     });

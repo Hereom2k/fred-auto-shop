@@ -104,6 +104,41 @@
 }
 
 /* =========================================================
+    light mode: same names as layer 2, lighter values
+    the theme toggle in the top bar sets data-theme="light" on <html>
+   ========================================================= */
+[data-theme="light"] {
+    /* backgrounds */
+    --color-app: #e6e9ed;
+    --color-surface: #f4f5f7;
+    --color-raised: #e2e6ea;
+    --color-inset: #eceef1;
+    --color-table-head: #e8ebef;
+    --color-row: #f4f5f7;
+    --color-row-alt: #eef0f3;
+
+    /* borders */
+    --color-line: #d6dbe0;
+    --color-line-strong: #c2c8cf;
+
+    /* text */
+    --color-ink: #16191e;
+    --color-muted: #5f6670;
+
+    /* brand: a shade darker so it stands out on white */
+    --color-accent: var(--color-primary-600);
+    --color-accent-hover: var(--color-primary-500);
+
+    /* statuses: darker shades so the text is readable on white */
+    --color-status-not-started: var(--color-neutral-500);
+    --color-status-in-progress: var(--color-secondary-600);
+    --color-status-awaiting-parts: #d97706;
+    --color-status-overdue: #dc2626;
+    --color-status-ready: var(--color-tertiary-600);
+    --color-status-delivered: var(--color-primary-700);
+}
+
+/* =========================================================
     layer 3: reusable pieces
    ========================================================= */
 body {
@@ -145,7 +180,7 @@ body {
     @apply bg-accent text-neutral-950 hover:bg-accent-hover shadow-[0_4px_12px_rgba(20,184,166,0.2)];
 }
 @utility btn-secondary {
-    @apply bg-raised text-ink hover:bg-neutral-700;
+    @apply bg-raised text-ink hover:bg-line-strong;
 }
 @utility btn-inverted {
     @apply bg-neutral-100 text-neutral-900 hover:bg-white;
