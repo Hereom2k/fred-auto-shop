@@ -72,28 +72,27 @@
    ========================================================= */
 @theme {
     /* backgrounds */
-    --color-app: var(--color-neutral-950); /* page background */
-    --color-surface: var(--color-neutral-900); /* cards, sidebar, top bar */
-    --color-raised: var(--color-neutral-800); /* chips, inputs, hover rows */
+    --color-app: #0d0e11; /* page background (design.md canvas) */
+    --color-surface: #16191e; /* cards, sidebar, top bar */
+    --color-raised: #222427; /* chips, nested blocks, hover rows */
 
-    --color-inset: var(--color-neutral-850);
+    --color-inset: #1a1d24; /* inputs */
 
     --color-table-head: #1e2126; /* table header row */
-
     --color-row: #181a1e; /* odd table rows */
     --color-row-alt: #1b1d21; /* even table rows */
 
     /* borders */
-    --color-line: var(--color-neutral-800);
-    --color-line-strong: var(--color-neutral-700);
+    --color-line: #2a2b2e;
+    --color-line-strong: #3a3b40;
 
     /* text */
-    --color-ink: var(--color-neutral-100); /* main text */
-    --color-muted: var(--color-neutral-400); /* secondary text, placeholders */
+    --color-ink: #e3e2e3; /* main text */
+    --color-muted: #9ca3af; /* secondary text, placeholders */
 
     /* brand */
-    --color-accent: var(--color-primary-400);
-    --color-accent-hover: var(--color-primary-300);
+    --color-accent: var(--color-primary-500); /* #14b8a6 */
+    --color-accent-hover: var(--color-primary-400); /* #2dd4bf */
 
     /* job statuses (keys match the status values in the database) */
     --color-status-not-started: var(--color-neutral-300);
@@ -135,7 +134,7 @@ body {
 }
 
 @utility card {
-    @apply bg-surface border border-line rounded-xl;
+    @apply bg-surface border border-line rounded-[10px];
 }
 
 /* buttons: use as class="btn btn-primary" */
@@ -143,7 +142,7 @@ body {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
 }
 @utility btn-primary {
-    @apply bg-accent text-neutral-950 hover:bg-accent-hover;
+    @apply bg-accent text-neutral-950 hover:bg-accent-hover shadow-[0_4px_12px_rgba(20,184,166,0.2)];
 }
 @utility btn-secondary {
     @apply bg-raised text-ink hover:bg-neutral-700;
