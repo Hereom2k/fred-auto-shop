@@ -1,0 +1,543 @@
+<<<<<<< Updated upstream
+=======
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>Staff Management | Fred's Auto Electrical</title>
+
+    <!-- Shared application stylesheet -->
+    <link rel="stylesheet" href="/src/css/main.css" />
+
+    <!-- Material Symbols -->
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+</head>
+
+<body class="admin-dashboard staff-management-page">
+
+    <!--
+        Sidebar and topbar are initialized by:
+        src/js/shared/page.js
+    -->
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="dashboard-main">
+
+        <!-- PAGE HEADER -->
+
+        <header class="sm-page-head">
+
+            <div>
+                <h1>Staff</h1>
+
+                <p>
+                    Manage who can sign in to the system
+                </p>
+            </div>
+
+            <button
+                id="sm-add"
+                class="sm-primary"
+                type="button"
+            >
+                <span class="material-symbols-outlined">
+                    person_add
+                </span>
+
+                <span>Add staff</span>
+            </button>
+
+        </header>
+
+        <!-- PAGE ERROR MESSAGE -->
+
+        <div
+            id="sm-error"
+            class="sm-error"
+            role="alert"
+            hidden
+        ></div>
+
+        <!-- =================================================
+             STAFF SUMMARY CARDS
+             ================================================= -->
+
+       
+<!-- =====================================================
+     STAFF MANAGEMENT — STATISTICS CARDS
+     ===================================================== -->
+
+        <section class="sm-stats">
+
+            <!-- ACTIVE TEAM -->
+            <article class="sm-stat-card">
+
+                <div class="sm-stat-heading">
+                    <span>ACTIVE TEAM</span>
+
+                    <span class="material-symbols-outlined">
+                        group
+                    </span>
+                </div>
+
+                <div class="sm-stat-count">
+                    <strong id="sm-active">0</strong>
+                    <span>Active</span>
+                </div>
+
+                <p>
+                    Staff members with active system access.
+                </p>
+
+                <div class="sm-stat-footer">
+                    Accounts currently enabled
+                </div>
+
+            </article>
+
+
+            <!-- PENDING SETUP -->
+            <article class="sm-stat-card">
+
+                <div class="sm-stat-heading">
+                    <span>PENDING SETUP</span>
+
+                    <span class="material-symbols-outlined">
+                        mail
+                    </span>
+                </div>
+
+                <div class="sm-stat-count">
+                    <strong id="sm-invited">0</strong>
+                    <span>Invited</span>
+                </div>
+
+                <p>
+                    Invited employees awaiting account activation.
+                </p>
+
+                <div class="sm-stat-footer">
+                    Setup not yet completed
+                </div>
+
+            </article>
+
+
+            <!-- RESTRICTED -->
+            <article class="sm-stat-card">
+
+                <div class="sm-stat-heading">
+                    <span>RESTRICTED</span>
+
+                    <span class="material-symbols-outlined">
+                        shield_lock
+                    </span>
+                </div>
+
+                <div class="sm-stat-count">
+                    <strong id="sm-deactivated">0</strong>
+                    <span>Deactivated</span>
+                </div>
+
+                <p>
+                    Staff accounts with system access disabled.
+                </p>
+
+                <div class="sm-stat-footer">
+                    Can be reactivated by an admin
+                </div>
+
+            </article>
+
+
+            <!-- ROSTER TOTAL -->
+            <article class="sm-stat-card">
+
+                <div class="sm-stat-heading">
+                    <span>ROSTER TOTAL</span>
+
+                    <span class="material-symbols-outlined">
+                        groups
+                    </span>
+                </div>
+
+                <div class="sm-stat-count">
+                    <strong id="sm-total">0</strong>
+                    <span>Registered</span>
+                </div>
+
+                <p>
+                    All staff accounts registered in the system.
+                </p>
+
+                <div class="sm-stat-footer">
+                    Includes every account status
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             STAFF FILTERS
+             ================================================= -->
+
+        <section
+            class="sm-toolbar"
+            aria-label="Staff filters"
+        >
+
+            <span>FILTER:</span>
+
+            <div
+                id="sm-filters"
+                class="sm-filters"
+            >
+
+                <button
+                    type="button"
+                    class="active"
+                    data-filter="all"
+                    aria-label="Show all staff"
+                >
+                    All (0)
+                </button>
+
+                <button
+                    type="button"
+                    data-filter="active"
+                    aria-label="Show active staff"
+                >
+                    Active (0)
+                </button>
+
+                <button
+                    type="button"
+                    data-filter="invited"
+                    aria-label="Show invited staff"
+                >
+                    Invited (0)
+                </button>
+
+                <button
+                    type="button"
+                    data-filter="deactivated"
+                    aria-label="Show deactivated staff"
+                >
+                    Deactivated (0)
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             DESKTOP STAFF TABLE
+             ================================================= -->
+
+        <section
+            class="sm-table-wrap"
+            aria-label="Staff roster"
+        >
+
+            <table class="sm-table">
+
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Added</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="sm-tbody">
+
+                    <!--
+                        Staff rows are dynamically generated
+                        by src/js/admin/staff.js
+                    -->
+
+                    <tr>
+                        <td colspan="6">
+                            Loading staff members...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- =================================================
+             MOBILE STAFF CARDS
+             ================================================= -->
+
+        <section
+            id="sm-mobile"
+            class="sm-mobile"
+            aria-label="Staff roster mobile view"
+        >
+
+            <!--
+                Mobile staff cards are dynamically generated
+                by src/js/admin/staff.js
+            -->
+
+        </section>
+
+    </main>
+
+    <!-- =====================================================
+         ADD STAFF / STAFF ACTION MODAL
+         ===================================================== -->
+
+    
+<!-- =====================================================
+     STAFF MANAGEMENT MODAL
+     ===================================================== -->
+
+    <dialog
+        id="sm-dialog"
+        class="dashboard-modal sm-dialog"
+        aria-labelledby="sm-dialog-title"
+        aria-describedby="sm-dialog-desc"
+    >
+        <form id="sm-form" novalidate>
+
+            <!-- Modal Header -->
+            <div class="modal-head">
+
+                <div>
+                    <h2 id="sm-dialog-title">
+                        Invite employee
+                    </h2>
+                </div>
+
+                <button
+                    id="sm-close"
+                    class="sm-icon"
+                    type="button"
+                    aria-label="Close dialog"
+                >
+                    <span class="material-symbols-outlined">
+                        close
+                    </span>
+                </button>
+
+            </div>
+
+            <!-- Modal Body -->
+            <div class="sm-dialog-body">
+
+                <p id="sm-dialog-desc">
+                    Send an invitation to activate an employee account.
+                </p>
+
+                <!-- Error Message -->
+                <div
+                    id="sm-modal-error"
+                    class="sm-error"
+                    role="alert"
+                    hidden
+                ></div>
+
+                <!-- =========================================
+                    INVITE EMPLOYEE FIELDS
+                    ========================================= -->
+
+                <div id="sm-form-fields">
+
+                    <!-- Full Name -->
+                    <div class="sm-field-group">
+
+                        <div class="sm-field-heading">
+                            <label for="sm-name">
+                                Full name
+                            </label>
+
+                            <span>REQUIRED</span>
+                        </div>
+
+                        <input
+                            id="sm-name"
+                            name="full_name"
+                            type="text"
+                            class="field"
+                            placeholder="Employee's full name"
+                            maxlength="100"
+                            autocomplete="name"
+                            required
+                        />
+
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="sm-field-group">
+
+                        <div class="sm-field-heading">
+                            <label for="sm-email">
+                                Email address
+                            </label>
+
+                            <span>REQUIRED</span>
+                        </div>
+
+                        <input
+                            id="sm-email"
+                            name="email"
+                            type="email"
+                            class="field"
+                            placeholder="employee@example.com"
+                            maxlength="150"
+                            autocomplete="email"
+                            required
+                        />
+
+                        <p class="sm-field-hint">
+                            An activation link will be sent to this email.
+                        </p>
+
+                    </div>
+
+                    <!-- Employee Role -->
+                    <div class="sm-field-group">
+
+                        <div class="sm-field-heading">
+                            <label for="sm-role">
+                                Employee role
+                            </label>
+
+                            <span>SELECT ROLE</span>
+                        </div>
+
+                        <select
+                            id="sm-role"
+                            name="role"
+                            class="field"
+                            required
+                        >
+                            <option value="staff" selected>
+                                Staff
+                            </option>
+
+                            <option value="admin">
+                                Admin
+                            </option>
+                        </select>
+
+                        <!-- Admin Warning -->
+                        <div
+                            id="sm-admin-warning"
+                            class="sm-warning"
+                            hidden
+                        >
+                            <strong>Elevated permissions:</strong>
+                            Admins can access reports, revenue,
+                            and administrative functions.
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Confirmation for other staff actions -->
+                <p
+                    id="sm-confirm-message"
+                    hidden
+                ></p>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+
+                <button
+                    id="sm-cancel"
+                    class="sm-secondary"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    id="sm-submit"
+                    class="sm-primary"
+                    type="submit"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <rect
+                            x="2"
+                            y="4"
+                            width="20"
+                            height="16"
+                            rx="2"
+                        />
+
+                        <path d="m22 7-10 6L2 7" />
+                    </svg>
+
+                    <span id="sm-submit-text">
+                        Send invitation
+                    </span>
+                </button>
+
+            </div>
+
+        </form>
+    </dialog>
+
+
+    <!-- =====================================================
+         TOAST NOTIFICATIONS
+         ===================================================== -->
+
+    <div
+        id="sm-toast"
+        class="dashboard-toast"
+        role="status"
+        aria-live="polite"
+        style="display: none;"
+    ></div>
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script
+        type="module"
+        src="/src/js/admin/staff.js"
+    ></script>
+
+</body>
+</html>
+>>>>>>> Stashed changes
