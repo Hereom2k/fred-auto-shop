@@ -1,731 +1,292 @@
-<<<<<<< Updated upstream
-=======
+// staff management page (admins only)
+// lists every account, invites new staff and deactivates or reactivates accounts
 
 import { supabase } from "../lib/supabase.js";
 import { initPage } from "../shared/page.js";
+import { confirmDialog, isConfirmOpen } from "../shared/confirm-dialog.js";
+import { showToast } from "../shared/toast.js";
+import { setupInviteForm } from "./invite.js";
 
-// =========================================================
-// STAFF MANAGEMENT — STATE
-// =========================================================
+// label and pill classes for each account status
+// class names are written out in full so tailwind can find them
+const statuses = {
+    active:      { label: "Active",      pill: "status-delivered" },
+    invited:     { label: "Invited",     pill: "status-in-progress" },
+    deactivated: { label: "Deactivated", pill: "status-not-started" },
+};
+
+const roles = {
+    admin: { label: "Admin", pill: "status-ready" },
+    staff: { label: "Staff", pill: "status-not-started" },
+};
+
+// order the chips appear in
+const chipKeys = ["active", "invited", "deactivated"];
+
+// filled from supabase in loadStaff()
+let roster = [];
+let me = null; // the signed in admin's profile
+
+let statusFilter = "all";
+let isBusy = false;
+let isInviteOpen = false;
+let lastFocused = null;
 
 const $ = (id) => document.getElementById(id);
 
-let roster = [];
-let me = null;
-let filter = "all";
-let action = "invite";
-let target = null;
-let saving = false;
-
-
-// =========================================================
-// HELPER FUNCTIONS
-// =========================================================
-
-function escapeHtml(value) {
-    const characters = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    };
-
-    return String(value ?? "").replace(
-        /[&<>"']/g,
-        (character) => characters[character]
-    );
+// text from the database gets escaped before it goes into html
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text ?? "";
+    return div.innerHTML;
 }
 
+// ---------- small helpers ----------
+
+// deactivated beats invited, so a deactivated invite shows as deactivated
 function statusOf(person) {
-    if (!person.is_active) {
-        return "deactivated";
-    }
-
-    if (person.must_set_password) {
-        return "invited";
-    }
-
+    if (!person.is_active) return "deactivated";
+    if (person.must_set_password) return "invited";
     return "active";
 }
 
-function nameOf(person) {
-    return person.full_name || person.email || "Unnamed staff";
-}
-
-function isMe(person) {
-    return person.profile_id === me?.profile_id;
-}
+const nameOf = (person) => person.full_name || person.email || "Unnamed";
+const isMe = (person) => person.profile_id === me?.profile_id;
 
 function initials(name) {
     return name
         .trim()
         .split(/\s+/)
         .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase() || "")
+        .map((part) => part[0]?.toUpperCase() ?? "")
         .join("");
 }
 
-function displayDate(date) {
-    if (!date) {
-        return "—";
-    }
+// e.g. 16 Nov 2026
+const formatDate = (value) =>
+    value ? new Date(value).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
-    return new Date(date).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-    });
+const pill = (look) =>
+    `<span class="pill ${look.pill}"><span class="size-1.5 rounded-full bg-current"></span>${look.label}</span>`;
+
+// ---------- loading from supabase ----------
+
+function showMessageRow(text) {
+    $("staff-body").innerHTML = `<tr><td colspan="6" class="p-8 text-center text-muted">${text}</td></tr>`;
 }
-
-
-// =========================================================
-// NOTIFICATIONS AND ERRORS
-// =========================================================
-
-function alertPage(message = "") {
-    const element = $("sm-error");
-
-    element.textContent = message;
-    element.hidden = !message;
-}
-
-function toast(message, error = false) {
-    const element = $("sm-toast");
-
-    element.textContent = message;
-    element.style.display = "block";
-    element.classList.toggle("sm-toast-error", error);
-
-    clearTimeout(toast.timer);
-
-    toast.timer = setTimeout(() => {
-        element.style.display = "none";
-    }, 4500);
-}
-
-
-// =========================================================
-// STAFF ACTION BUTTONS
-// =========================================================
-
-function buttons(person) {
-    if (isMe(person)) {
-        return '<span class="sm-email">Self protected</span>';
-    }
-
-    const id = escapeHtml(person.profile_id);
-
-    if (!person.is_active) {
-        return `
-            <button
-                type="button"
-                data-action="reactivate"
-                data-id="${id}"
-            >
-                Reactivate
-            </button>
-        `;
-    }
-
-    const resendButton = person.must_set_password
-        ? `
-            <button
-                type="button"
-                data-action="resend"
-                data-id="${id}"
-            >
-                Resend invite
-            </button>
-        `
-        : "";
-
-    return `
-        ${resendButton}
-
-        <button
-            type="button"
-            data-action="deactivate"
-            data-id="${id}"
-        >
-            Deactivate
-        </button>
-    `;
-}
-
-
-// =========================================================
-// RENDER STAFF MANAGEMENT
-// =========================================================
-
-function render() {
-    const counts = {
-        all: roster.length,
-        active: 0,
-        invited: 0,
-        deactivated: 0
-    };
-
-    // Count staff by status
-    roster.forEach((person) => {
-        counts[statusOf(person)]++;
-    });
-
-    // Update statistics and filters
-    for (const key of Object.keys(counts)) {
-        const counter = $(
-            key === "all" ? "sm-total" : `sm-${key}`
-        );
-
-        counter.textContent = counts[key];
-
-        const button = document.querySelector(
-            `#sm-filters [data-filter="${key}"]`
-        );
-
-        button.textContent = `
-            ${key[0].toUpperCase() + key.slice(1)} (${counts[key]})
-        `.trim();
-
-        button.classList.toggle(
-            "active",
-            filter === key
-        );
-
-        button.setAttribute(
-            "aria-pressed",
-            String(filter === key)
-        );
-    }
-
-    // Filter and sort staff
-    const visible = roster
-        .filter((person) => {
-            return filter === "all" ||
-                statusOf(person) === filter;
-        })
-        .sort((a, b) => {
-            return Number(statusOf(a) === "deactivated") -
-                Number(statusOf(b) === "deactivated");
-        });
-
-    // -----------------------------------------------------
-    // DESKTOP TABLE
-    // -----------------------------------------------------
-
-    $("sm-tbody").innerHTML = visible.length
-        ? visible.map((person) => {
-            const status = statusOf(person);
-            const role = String(
-                person.role || "staff"
-            ).toLowerCase();
-
-            return `
-                <tr>
-                    <td>
-                        <div class="sm-person">
-                            <span class="sm-avatar">
-                                ${escapeHtml(initials(nameOf(person)))}
-                            </span>
-
-                            <span>
-                                ${escapeHtml(nameOf(person))}
-
-                                ${isMe(person)
-                                    ? '<span class="sm-you">YOU</span>'
-                                    : ""}
-                            </span>
-                        </div>
-                    </td>
-
-                    <td class="sm-email">
-                        ${escapeHtml(person.email)}
-                    </td>
-
-                    <td>
-                        <span class="sm-pill ${role}">
-                            ${escapeHtml(role)}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="sm-pill ${status}">
-                            ${status}
-                        </span>
-                    </td>
-
-                    <td>
-                        ${escapeHtml(displayDate(person.created_at))}
-                    </td>
-
-                    <td>
-                        <div class="sm-actions">
-                            ${buttons(person)}
-                        </div>
-                    </td>
-                </tr>
-            `;
-        }).join("")
-        : `
-            <tr>
-                <td colspan="6">
-                    No staff found for this filter.
-                </td>
-            </tr>
-        `;
-
-    // -----------------------------------------------------
-    // MOBILE CARDS
-    // -----------------------------------------------------
-
-    $("sm-mobile").innerHTML = visible.map((person) => {
-        const status = statusOf(person);
-        const role = escapeHtml(person.role);
-
-        return `
-            <article class="sm-card">
-
-                <div class="sm-card-top">
-                    <div class="sm-person">
-                        <span class="sm-avatar">
-                            ${escapeHtml(initials(nameOf(person)))}
-                        </span>
-
-                        <span>
-                            ${escapeHtml(nameOf(person))}
-
-                            ${isMe(person)
-                                ? '<span class="sm-you">YOU</span>'
-                                : ""}
-                        </span>
-                    </div>
-
-                    <span class="sm-pill ${role}">
-                        ${role}
-                    </span>
-                </div>
-
-                <div class="sm-email">
-                    ${escapeHtml(person.email)}
-                </div>
-
-                <div class="sm-card-bottom">
-                    <span class="sm-pill ${status}">
-                        ${status}
-                    </span>
-
-                    <span class="sm-email">
-                        ${escapeHtml(displayDate(person.created_at))}
-                    </span>
-
-                    <div class="sm-actions">
-                        ${buttons(person)}
-                    </div>
-                </div>
-
-            </article>
-        `;
-    }).join("") || "<p>No staff found for this filter.</p>";
-}
-
-
-// =========================================================
-// LOAD STAFF FROM SUPABASE
-// =========================================================
 
 async function loadStaff() {
     const { data, error } = await supabase
         .from("profiles")
-        .select(`
-            profile_id,
-            full_name,
-            email,
-            role,
-            is_active,
-            must_set_password,
-            created_at
-        `)
-        .order("created_at", {
-            ascending: false
-        });
+        .select("profile_id, full_name, email, role, is_active, must_set_password, created_at")
+        .order("created_at", { ascending: false });
 
     if (error) {
-        throw error;
+        console.error("Could not load staff:", error);
+        $("staff-error").textContent = "Couldn't load the staff list. Refresh the page to try again.";
+        $("staff-error").classList.remove("hidden");
+        showMessageRow("No staff to show.");
+        return false;
     }
 
-    roster = (data || []).filter((person) => {
-        return ["admin", "staff"].includes(person.role);
+    $("staff-error").classList.add("hidden");
+    roster = data;
+    return true;
+}
+
+// ---------- counts and chips ----------
+function renderCounts() {
+    const count = (key) => roster.filter((p) => statusOf(p) === key).length;
+
+    $("count-all").textContent = roster.length;
+    chipKeys.forEach((key) => ($(`count-${key}`).textContent = count(key)));
+
+    const chip = (key, label, total) => {
+        const selected = statusFilter === key;
+        return `
+        <button type="button" data-status="${key}" aria-pressed="${selected}"
+          class="px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wide uppercase transition cursor-pointer
+          ${selected ? "bg-accent text-neutral-950" : "bg-inset text-ink/75 hover:bg-raised"}">
+          ${label} (${total})
+        </button>`;
+    };
+
+    $("status-chips").innerHTML =
+        chip("all", "All", roster.length) +
+        chipKeys.map((key) => chip(key, statuses[key].label, count(key))).join("");
+}
+
+// ---------- table ----------
+
+// buttons for one row; you can't change your own account
+function actionButtons(person) {
+    if (isMe(person)) {
+        return `<span class="text-xs text-muted">Your account</span>`;
+    }
+    if (!person.is_active) {
+        return `<button type="button" data-action="reactivate" data-id="${person.profile_id}" class="btn btn-secondary px-3 py-1.5 text-xs">Reactivate</button>`;
+    }
+    // plain red text until hovered (transparent border keeps the size the same on hover)
+    return `<button type="button" data-action="deactivate" data-id="${person.profile_id}"
+        class="btn px-3 py-1.5 text-xs text-status-overdue border border-transparent hover:bg-status-overdue/10 hover:border-status-overdue/40">Deactivate</button>`;
+}
+
+function renderTable() {
+    // deactivated accounts go to the bottom
+    const list = roster
+        .filter((p) => statusFilter === "all" || statusOf(p) === statusFilter)
+        .sort((a, b) => Number(statusOf(a) === "deactivated") - Number(statusOf(b) === "deactivated"));
+
+    if (!list.length) {
+        showMessageRow("No staff found for this filter.");
+        return;
+    }
+
+    $("staff-body").innerHTML = list
+        .map((p) => `
+      <tr class="odd:bg-row even:bg-row-alt">
+        <td class="px-5 py-4">
+          <div class="flex items-center gap-3">
+            <span class="size-9 shrink-0 rounded-full bg-accent/15 text-accent text-xs font-bold flex items-center justify-center">
+              ${escapeHtml(initials(nameOf(p)))}
+            </span>
+            <span class="text-sm font-semibold">${escapeHtml(nameOf(p))}</span>
+            ${isMe(p) ? `<span class="rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold text-neutral-950">YOU</span>` : ""}
+          </div>
+        </td>
+        <td class="px-5 py-4 text-sm text-muted">${escapeHtml(p.email)}</td>
+        <td class="px-5 py-4">${pill(roles[p.role] ?? roles.staff)}</td>
+        <td class="px-5 py-4">${pill(statuses[statusOf(p)])}</td>
+        <td class="px-5 py-4 text-sm text-muted whitespace-nowrap">${formatDate(p.created_at)}</td>
+        <td class="px-5 py-4 text-right">${actionButtons(p)}</td>
+      </tr>`)
+        .join("");
+}
+
+function renderAll() {
+    renderCounts();
+    renderTable();
+}
+
+// ---------- deactivate / reactivate ----------
+
+// calls the manage-staff edge function, which checks the caller is an admin
+async function changeAccess(person, action) {
+    const deactivating = action === "deactivate";
+
+    const confirmed = await confirmDialog({
+        title: deactivating ? `Deactivate ${nameOf(person)}?` : `Reactivate ${nameOf(person)}?`,
+        message: deactivating
+            ? "They won't be able to sign in. Their jobs and records stay as they are."
+            : "They'll be able to sign in again.",
+        confirmLabel: deactivating ? "Deactivate" : "Reactivate",
+        tone: deactivating ? "danger" : "primary",
     });
+    if (!confirmed) return;
 
-    render();
-}
+    isBusy = true;
+    const { data, error } = await supabase.functions.invoke("manage-staff", {
+        body: { action, profile_id: person.profile_id },
+    });
+    isBusy = false;
 
-
-// =========================================================
-// MODAL MANAGEMENT
-// =========================================================
-
-function openDialog(nextAction, person = null) {
-    action = nextAction;
-    target = person;
-
-    $("sm-form").reset();
-    $("sm-modal-error").hidden = true;
-    $("sm-admin-warning").hidden = true;
-
-    const invite = action === "invite";
-
-    $("sm-form-fields").hidden = !invite;
-    $("sm-confirm-message").hidden = invite;
-
-    const labels = {
-        invite: "Invite staff",
-        deactivate: "Deactivate staff",
-        reactivate: "Reactivate staff",
-        resend: "Resend invitation"
-    };
-
-    const submitLabels = {
-        invite: "Create account and send email",
-        deactivate: "Deactivate",
-        reactivate: "Reactivate",
-        resend: "Resend invite"
-    };
-
-    $("sm-dialog-title").textContent = labels[action];
-
-    $("sm-dialog-desc").textContent = invite
-        ? "Send an onboarding invite to provide system access."
-        : "Confirm the action below.";
-
-    $("sm-submit-text").textContent = action === "invite"
-    ? "Send invitation"
-    : submitLabels[action];
-
-    if (!invite) {
-        const messages = {
-            deactivate: `
-                Deactivate ${nameOf(person)}?
-                They will be unable to sign in.
-                Their existing records will remain.
-            `,
-
-            reactivate: `
-                Reactivate ${nameOf(person)}?
-            `,
-
-            resend: `
-                Resend the setup invitation to ${person.email}?
-            `
-        };
-
-        $("sm-confirm-message").textContent =
-            messages[action].trim();
-    }
-
-    $("sm-dialog").showModal();
-}
-
-
-// =========================================================
-// SUPABASE EDGE FUNCTION
-// =========================================================
-
-async function invoke(functionName, body) {
-    const { data, error } = await supabase.functions.invoke(
-        functionName,
-        { body }
-    );
-
-    if (error) {
-        let message = error.message;
-
+    if (error || !data?.success) {
+        // the function puts its own error message in the response body
+        let errorText = data?.error ?? "Please try again.";
         try {
-            message = (
-                await error.context?.json()
-            )?.error || message;
+            errorText = (await error?.context?.json())?.error ?? errorText;
         } catch {
-            // Non-JSON response
+            // body wasn't JSON, keep the default error message
         }
-
-        throw new Error(message);
-    }
-
-    if (!data?.success) {
-        throw new Error(
-            data?.error || "Operation failed."
-        );
-    }
-
-    return data;
-}
-
-
-// =========================================================
-// SUBMIT STAFF ACTION
-// =========================================================
-
-async function submit(event) {
-    event.preventDefault();
-
-    if (saving) {
+        console.error("Manage staff error:", error ?? data);
+        showToast(`Couldn't ${action} account`, errorText, "error");
         return;
     }
 
-    const errorNode = $("sm-modal-error");
-    errorNode.hidden = true;
-
-    let functionName;
-    let payload;
-
-    // -----------------------------------------------------
-    // INVITE NEW STAFF
-    // -----------------------------------------------------
-
-    if (action === "invite") {
-        const full_name = $("sm-name").value.trim();
-
-        const email = $("sm-email")
-            .value
-            .trim()
-            .toLowerCase();
-
-        const role = $("sm-role").value;
-
-        if (
-            !full_name ||
-            full_name.length > 100 ||
-            !$("sm-email").checkValidity() ||
-            !email
-        ) {
-            errorNode.textContent =
-                "Enter a valid name and email address.";
-
-            errorNode.hidden = false;
-            return;
-        }
-
-        const exists = roster.some((person) => {
-            return person.email?.toLowerCase() === email;
-        });
-
-        if (exists) {
-            errorNode.textContent =
-                "An account with this email already exists.";
-
-            errorNode.hidden = false;
-            return;
-        }
-
-        functionName = "invite-employee";
-
-        payload = {
-            full_name,
-            email,
-            role
-        };
-    }
-
-    // -----------------------------------------------------
-    // MANAGE EXISTING STAFF
-    // -----------------------------------------------------
-
-    else {
-        if (!target || isMe(target)) {
-            return;
-        }
-
-        const activeAdmins = roster.filter((person) => {
-            return person.role === "admin" &&
-                person.is_active;
-        });
-
-        if (
-            action === "deactivate" &&
-            target.role === "admin" &&
-            activeAdmins.length <= 1
-        ) {
-            errorNode.textContent =
-                "Cannot deactivate the last active admin.";
-
-            errorNode.hidden = false;
-            return;
-        }
-
-        functionName = "manage-staff";
-
-        payload = {
-            action,
-            profile_id: target.profile_id
-        };
-    }
-
-    // -----------------------------------------------------
-    // SEND REQUEST
-    // -----------------------------------------------------
-
-    saving = true;
-
-    const submitButton = $("sm-submit");
-    const submitText = $("sm-submit-text");
-    const originalLabel = submitText.textContent;
-
-    submitButton.disabled = true;
-    submitText.textContent = "Please wait…";
-
-    try {
-        await invoke(functionName, payload);
-
-        $("sm-dialog").close();
-
-        toast(
-            action === "invite"
-                ? "Invitation sent successfully."
-                : "Staff account updated successfully."
-        );
-
-        try {
-            await loadStaff();
-            alertPage();
-        } catch (loadError) {
-            alertPage(
-                `Action succeeded, but refreshing the roster failed: ${loadError.message}`
-            );
-        }
-    } catch (error) {
-        errorNode.textContent = error.message;
-        errorNode.hidden = false;
-    } finally {
-        saving = false;
-
-        submitButton.disabled = false;
-        submitText.textContent = originalLabel;
-    }
+    showToast(deactivating ? "Account deactivated" : "Account reactivated", nameOf(person));
+    if (await loadStaff()) renderAll();
 }
 
+// ---------- invite modal ----------
 
-// =========================================================
-// INITIALIZE STAFF MANAGEMENT PAGE
-// =========================================================
+function openInvite() {
+    if (isInviteOpen) return;
+    lastFocused = document.activeElement;
+    $("inviteForm").reset();
 
+    $("invite-modal").classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+    // next frame so the fade-in transition actually runs
+    requestAnimationFrame(() => {
+        $("invite-modal").querySelector("[data-modal-backdrop]").classList.replace("opacity-0", "opacity-100");
+        $("invite-box").classList.remove("opacity-0", "scale-95");
+    });
+    isInviteOpen = true;
+    $("inviteFullName").focus();
+}
+
+// force skips the "still sending" check, for closing right after a successful invite
+function closeInvite(force = false) {
+    // don't close while the invite is still sending
+    if (!isInviteOpen || (!force && $("inviteButton").disabled)) return;
+
+    $("invite-modal").querySelector("[data-modal-backdrop]").classList.replace("opacity-100", "opacity-0");
+    $("invite-box").classList.add("opacity-0", "scale-95");
+    document.body.classList.remove("overflow-hidden");
+    isInviteOpen = false;
+    setTimeout(() => {
+        if (!isInviteOpen) $("invite-modal").classList.add("hidden");
+    }, 200);
+    lastFocused?.focus?.();
+}
+
+// ---------- events ----------
+function setupEvents() {
+    // filter chips (one listener on the container)
+    $("status-chips").addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-status]");
+        if (!btn) return;
+        statusFilter = btn.dataset.status;
+        renderAll();
+    });
+
+    // deactivate and reactivate buttons
+    $("staff-body").addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-action]");
+        if (!btn || isBusy) return;
+        const person = roster.find((p) => p.profile_id === btn.dataset.id);
+        if (person) changeAccess(person, btn.dataset.action);
+    });
+
+    // invite modal
+    $("add-staff-btn").addEventListener("click", openInvite);
+    $("invite-modal").addEventListener("click", (e) => {
+        if (e.target.closest("[data-modal-close]") || e.target.matches("[data-modal-backdrop]")) closeInvite();
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && isInviteOpen && !isConfirmOpen()) closeInvite();
+    });
+
+    // after an invite: close the modal, show a toast and reload the table
+    setupInviteForm({
+        onInvited: async (email) => {
+            closeInvite(true);
+            showToast("Invitation sent", email);
+            if (await loadStaff()) renderAll();
+        },
+    });
+}
+
+// ---------- start ----------
 async function main() {
-    const context = await initPage({
-        active: "staff",
-        adminOnly: true
-    });
+    // checks the login, loads the profile and draws the sidebar
+    const page = await initPage({ active: "staff", adminOnly: true });
+    if (!page) return;
 
-    if (!context) {
-        return;
-    }
+    me = page.profile;
+    setupEvents();
 
-    me = context.profile;
-
-    // -----------------------------------------------------
-    // ADD STAFF
-    // -----------------------------------------------------
-
-    $("sm-add").addEventListener("click", () => {
-        openDialog("invite");
-    });
-
-    // -----------------------------------------------------
-    // CLOSE MODAL
-    // -----------------------------------------------------
-
-    $("sm-close").addEventListener("click", () => {
-        if (!saving) {
-            $("sm-dialog").close();
-        }
-    });
-
-    $("sm-cancel").addEventListener("click", () => {
-        if (!saving) {
-            $("sm-dialog").close();
-        }
-    });
-
-    $("sm-dialog").addEventListener("cancel", (event) => {
-        if (saving) {
-            event.preventDefault();
-        }
-    });
-
-    // -----------------------------------------------------
-    // ROLE SELECTION
-    // -----------------------------------------------------
-
-    $("sm-role").addEventListener("change", (event) => {
-        $("sm-admin-warning").hidden =
-            event.target.value !== "admin";
-    });
-
-    // -----------------------------------------------------
-    // FILTER BUTTONS
-    // -----------------------------------------------------
-
-    $("sm-filters").addEventListener("click", (event) => {
-        const button = event.target.closest("[data-filter]");
-
-        if (!button) {
-            return;
-        }
-
-        filter = button.dataset.filter;
-        render();
-    });
-
-    // -----------------------------------------------------
-    // STAFF ACTION BUTTONS
-    // -----------------------------------------------------
-
-    document.addEventListener("click", (event) => {
-        const button = event.target.closest(
-            "[data-action][data-id]"
-        );
-
-        if (!button) {
-            return;
-        }
-
-        const person = roster.find((item) => {
-            return item.profile_id === button.dataset.id;
-        });
-
-        if (person) {
-            openDialog(button.dataset.action, person);
-        }
-    });
-
-    // -----------------------------------------------------
-    // FORM SUBMISSION
-    // -----------------------------------------------------
-
-    $("sm-form").addEventListener("submit", submit);
-
-    // -----------------------------------------------------
-    // INITIAL DATA LOAD
-    // -----------------------------------------------------
-
-    try {
-        await loadStaff();
-    } catch (error) {
-        alertPage(
-            `Unable to load staff: ${error.message}`
-        );
-    }
+    if (await loadStaff()) renderAll();
 }
 
-
-// =========================================================
-// START APPLICATION
-// =========================================================
-
-main().catch((error) => {
-    console.error(
-        "Staff management initialization:",
-        error
-    );
-
-    alertPage(error.message);
-});
->>>>>>> Stashed changes
+main();
