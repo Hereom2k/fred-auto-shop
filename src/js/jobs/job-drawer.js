@@ -176,11 +176,18 @@ function drawerShell() {
 
             <!-- footer -->
             <footer class="px-6 py-4 border-t border-line bg-surface flex items-center justify-between gap-3 shrink-0">
-                <div class="flex flex-col gap-1">
-                    <p id="jd-locked" class="hidden items-center gap-2 text-xs text-muted font-mono">
-                        <span class="text-accent">${icon("lock")}</span>Work order locked (delivered)
-                    </p>
-                    <p id="jd-message" class="text-xs text-muted" role="status"></p>
+                <div class="flex items-center gap-3 min-w-0">
+                    <!-- admins only, hidden on delivered jobs -->
+                    <button type="button" id="jd-delete"
+                        class="hidden items-center gap-1.5 px-2 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider text-muted hover:text-status-overdue hover:bg-status-overdue/10 transition cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                        ${icon("trash", "size-3.5")} <span data-btn-label>Delete job</span>
+                    </button>
+                    <div class="flex flex-col gap-1 min-w-0">
+                        <p id="jd-locked" class="hidden items-center gap-2 text-xs text-muted font-mono">
+                            <span class="text-accent">${icon("lock")}</span>Work order locked (delivered)
+                        </p>
+                        <p id="jd-message" class="text-xs text-muted" role="status"></p>
+                    </div>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="button" data-jd-close class="btn btn-secondary py-2 text-xs uppercase tracking-wider">Close</button>
@@ -1308,6 +1315,58 @@ async function saveEdit(e) {
     showToast("Payment updated");
 }
 
+// ---------- admin: delete a job ----------
+
+// only admins, and only before delivery (a delivered job is a sales record the reports rely on)
+const canDeleteJob = () => options.isAdmin && job && !isDelivered();
+
+async function deleteJob() {
+    if (!canDeleteJob() || isBusy) return;
+
+    const sure = await confirmDialog({
+        title: "Delete this job?",
+        message: "This removes the job, its parts used and its photos. Linked appointments are kept. This can't be undone.",
+        confirmLabel: "Delete job",
+        cancelLabel: "Keep job",
+    });
+    if (!sure || !isOpen) return;
+
+    isBusy = true;
+    setLabel($("jd-delete"), "Deleting...");
+    $("jd-delete").disabled = true;
+    refresh();
+    setMessage("");
+
+    // delete the job first; its photo and parts records go with it.
+    // .select() returns the deleted row, so a delete blocked by row level security shows up as no rows
+    const { data, error } = await supabase.from("jobs").delete().eq("job_id", job.job_id).select("job_id");
+
+    isBusy = false;
+    setLabel($("jd-delete"), "Delete job");
+    $("jd-delete").disabled = false;
+    refresh();
+
+    if (error || !data?.length) {
+        console.error("Could not delete job:", error);
+        // 23503: a payment record still points at this job
+        const text = error?.code === "23503"
+            ? "This job has a payment record, so it can't be deleted."
+            : error ? "Couldn't delete the job. Please try again." : "Only admins can delete jobs.";
+        return setMessage(text, "error");
+    }
+
+    // then clean up the photo files so nothing is left in storage
+    const paths = photos.map((p) => p.storage_path);
+    if (paths.length) {
+        const { error: fileError } = await supabase.storage.from(BUCKET).remove(paths);
+        if (fileError) console.error("Job deleted but some photo files weren't:", fileError);
+    }
+
+    hide();
+    showToast("Job deleted");
+    options.onSaved(job.job_id); // reloads the jobs table
+}
+
 // ---------- success message ----------
 let toastTimer = null;
 function showToast(text) {
@@ -1362,6 +1421,7 @@ export async function openJobDrawer(jobId) {
     $("jd-status-label").textContent = "";
     $("jd-status-dot").className = "size-2 rounded-full";
     $("jd-save").classList.remove("hidden");
+    $("jd-delete").classList.replace("flex", "hidden");
     $("jd-locked").classList.replace("flex", "hidden");
     setMessage("");
     show();
@@ -1417,6 +1477,8 @@ export async function openJobDrawer(jobId) {
 
     // delivered work orders are read-only; admins correct parts and payment through the edit links
     $("jd-save").classList.toggle("hidden", isDelivered());
+    $("jd-delete").classList.toggle("hidden", !canDeleteJob());
+    $("jd-delete").classList.toggle("flex", canDeleteJob());
     if (isDelivered()) $("jd-locked").classList.replace("hidden", "flex");
 }
 
@@ -1565,6 +1627,7 @@ export function initJobDrawer({ userId, isAdmin = false, onSaved = () => {} } = 
     });
 
     $("jd-save").addEventListener("click", save);
+    $("jd-delete").addEventListener("click", deleteJob);
     $("jd-deliver").addEventListener("click", deliver);
     $("jd-confirm-delete").addEventListener("click", deletePhoto);
     $("jd-edit-form").addEventListener("submit", saveEdit);
