@@ -2,7 +2,8 @@
 import { supabase } from "../lib/supabase.js";
 
 // wires up the invite employee form on the staff page
-export function setupInviteForm() {
+// onInvited runs after a successful invite (the staff page uses it to close the modal and reload the table)
+export function setupInviteForm({ onInvited = () => {} } = {}) {
     const form = document.getElementById("inviteForm");
     if (!form) {
         return;
@@ -11,18 +12,31 @@ export function setupInviteForm() {
     const button = document.getElementById("inviteButton");
     const buttonText = document.getElementById("inviteButtonText");
     const message = document.getElementById("inviteMessage");
+    const role = document.getElementById("inviteRole");
+    const adminWarning = document.getElementById("inviteAdminWarning");
 
     // shows a green success or red error message under the form
     function showMessage(text, success = false) {
         message.textContent = text;
 
-        let colorClass = "text-accent";
+        let colorClass = "text-status-overdue";
         if (success) {
-            colorClass = "text-status-overdue";
+            colorClass = "text-accent";
         }
 
         message.className = "mt-4 text-xs leading-relaxed " + colorClass;
     }
+
+    // warn that admins get extra access
+    role.addEventListener("change", () => {
+        adminWarning?.classList.toggle("hidden", role.value !== "admin");
+    });
+
+    // clears the form and message, used when the modal opens
+    form.addEventListener("reset", () => {
+        message.textContent = "";
+        adminWarning?.classList.add("hidden");
+    });
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -42,7 +56,6 @@ export function setupInviteForm() {
                 .getElementById("inviteFullName")
                 .value.trim();
             const email = document.getElementById("inviteEmail").value.trim();
-            const role = document.getElementById("inviteRole").value;
 
             // the edge function creates the account and emails the set-password link
             const response = await supabase.functions.invoke(
@@ -51,7 +64,7 @@ export function setupInviteForm() {
                     body: {
                         full_name: fullName,
                         email: email,
-                        role: role,
+                        role: role.value,
                     },
                 },
             );
@@ -85,11 +98,12 @@ export function setupInviteForm() {
                 throw new Error(failText);
             }
 
+            form.reset();
             showMessage(
                 "Invitation sent! The employee can check their email.",
                 true,
             );
-            form.reset();
+            onInvited(email);
         } catch (err) {
             console.error("Invitation error:", err);
 

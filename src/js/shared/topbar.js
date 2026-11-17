@@ -15,7 +15,7 @@ const ICONS = {
 
 // where search results go (change these if the detail pages read a different parameter)
 const CUSTOMER_PAGE = (id) => `/pages/customer-details.html?id=${id}`;
-const JOB_PAGE = (id) => `/pages/jobs.html?id=${id}`;
+const JOB_PAGE = (id) => `/pages/jobs.html?job=${id}`;
 
 const RESULTS_PER_GROUP = 5;
 
