@@ -20,8 +20,14 @@
                 <p id="total-count" class="text-sm text-muted mt-1"></p>        <!-- total count -->
             </div>
             <div class="flex items-center gap-4">
-                <button id="new-job-btn" class="btn btn-primary">
-                    <span class="text-xl leading-none">+</span> New Job
+                <button id="new-job-btn" class="btn btn-primary relative group" aria-keyshortcuts="Control+J" aria-describedby="new-job-hint">
+                  <span class="text-xl leading-none">+</span> New Job
+                  <!-- shortcut hint, shows on hover or keyboard focus (jobs.js swaps in the mac version) -->
+                  <span id="new-job-hint" role="tooltip"
+                      class="pointer-events-none absolute top-full right-0 mt-1.5 whitespace-nowrap font-mono text-[10px] tracking-wide text-muted/70
+                            opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-hover:delay-300 group-focus-visible:opacity-100">
+                      <kbd data-shortcut-label>Ctrl+J</kbd>
+                  </span>
                 </button>
             </div>
         </div>
@@ -36,9 +42,14 @@
                     <input id="search" type="text" placeholder="Search by customer, vehicle or plate number" class="field pl-9" />
                 </div>
 
-                <div class="flex bg-app border border-line-strong rounded-lg p-1 text-xs font-semibold">
-                    <button data-view="active" class="view-btn px-3 py-1.5 rounded-md"></button>
-                    <button data-view="delivered" class="view-btn px-3 py-1.5 rounded-md"></button>
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- created by filter, admins only (options are built by the script) -->
+                    <select id="creator-filter" class="admin-only hidden bg-inset border border-line-strong rounded-lg px-3 py-2 text-xs font-semibold text-ink focus:outline-none focus:border-accent cursor-pointer" aria-label="Filter by who created the job"></select>
+
+                    <div class="flex bg-app border border-line-strong rounded-lg p-1 text-xs font-semibold">
+                        <button data-view="active" class="view-btn px-3 py-1.5 rounded-md"></button>
+                        <button data-view="delivered" class="view-btn px-3 py-1.5 rounded-md"></button>
+                    </div>
                 </div>
             </div>
 
@@ -55,6 +66,7 @@
                             <th class="px-5 py-4 w-[34%]">Problem</th>
                             <th class="px-5 py-4">Customer</th>
                             <th class="px-5 py-4">Vehicle</th>
+                            <th class="admin-only hidden px-5 py-4">Created by</th>
                             <th class="px-5 py-4 text-center">Status</th>
                             <th class="px-5 py-4 w-10"></th>
                         </tr>

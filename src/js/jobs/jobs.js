@@ -1,5 +1,7 @@
 import { supabase } from "../lib/supabase.js";
 import { initPage } from "../shared/page.js";
+import { initNewJobModal, openNewJobModal } from "./new-job-modal.js";
+import { initJobDrawer, openJobDrawer, isJobDrawerOpen } from "./job-drawer.js";
 
 // label, pill class and dot class for each status (keys match the job_status enum)
 // class names are written out in full so tailwind can find them
@@ -8,7 +10,7 @@ const statuses = {
     in_progress:      { label: "In Progress",      pill: "status-in-progress",    dot: "bg-status-in-progress" },
     awaiting_parts:   { label: "Awaiting Parts",   pill: "status-awaiting-parts", dot: "bg-status-awaiting-parts" },
     not_started:      { label: "Not Started",      pill: "status-not-started",    dot: "bg-status-not-started" },
-    ready_for_pickup: { label: "Ready for Pickup",            pill: "status-ready",          dot: "bg-status-ready" },
+    ready_for_pickup: { label: "Ready for Pickup", pill: "status-ready",          dot: "bg-status-ready" },
     delivered:        { label: "Delivered",        pill: "status-delivered",      dot: "bg-status-delivered" },
 };
 
@@ -267,10 +269,32 @@ function setupEvents() {
         renderTable();
     });
 
-    // clicking a row opens that job's details page
+    // clicking a row opens the job details drawer
     body.addEventListener("click", (e) => {
         const row = e.target.closest("tr[data-id]");
-        if (row) window.location.href = `/pages/job-details.html?id=${row.dataset.id}`;
+        if (row) openJobDrawer(row.dataset.id);
+    });
+}
+
+// ---------- keyboard shortcut ----------
+
+// ctrl+j opens the new job modal (cmd+j on a mac)
+// ctrl+n can't be used: chrome keeps it for "new window" and pages can't take it over
+function setupNewJobShortcut() {
+    const platform = navigator.userAgentData?.platform ?? navigator.platform ?? "";
+    const isMac = /mac|iphone|ipad/i.test(platform);
+
+    // show the right hint on the button
+    document.querySelector("[data-shortcut-label]").textContent = isMac ? "⌘J" : "Ctrl+J";
+    document.getElementById("new-job-btn").setAttribute("aria-keyshortcuts", isMac ? "Meta+J" : "Control+J");
+
+    document.addEventListener("keydown", (e) => {
+        const modifier = isMac ? e.metaKey : e.ctrlKey;
+        if (!modifier || e.shiftKey || e.altKey || e.repeat || e.key.toLowerCase() !== "j") return;
+
+        e.preventDefault(); // stops the browser opening its downloads page
+        if (isJobDrawerOpen()) return; // don't stack the new job modal on top of the job drawer
+        openNewJobModal(); // does nothing if the modal is already open
     });
 }
 
@@ -281,6 +305,29 @@ async function main() {
     if (!page) return;
 
     setupEvents();
+
+    // after a new job is saved, clear the filters so it shows at the top of the active list
+    initNewJobModal({
+        userId: page.user.id,
+        onCreated: async () => {
+            view = "active";
+            statusFilter = "all";
+            currentPage = 1;
+            search.value = "";
+            if (await loadJobs()) renderAll();
+        },
+    });
+    document.getElementById("new-job-btn").addEventListener("click", openNewJobModal);
+    setupNewJobShortcut();
+
+    // clicking a job opens the details drawer; after a save or delivery, reload the table
+    initJobDrawer({
+        userId: page.user.id,
+        isAdmin: page.profile.role === "admin",
+        onSaved: async () => {
+            if (await loadJobs()) renderAll();
+        },
+    });
 
     if (await loadJobs()) renderAll();
 }

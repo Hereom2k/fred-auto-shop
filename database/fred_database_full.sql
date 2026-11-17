@@ -54,7 +54,7 @@ CREATE TABLE jobs (
   delivered_at             timestamptz,
   customer_supplied_parts  boolean NOT NULL DEFAULT false,
   note_for_next_time       varchar(255),
-  created_by               uuid REFERENCES profiles(profile_id) ON DELETE SET NULL,
+  created_by               uuid DEFAULT auth.uid() REFERENCES profiles(profile_id) ON DELETE SET NULL,
   updated_at               timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT delivered_has_date CHECK (status <> 'delivered' OR delivered_at IS NOT NULL)
 );
@@ -267,6 +267,17 @@ BEGIN
   END LOOP;
 END $$;
 
+-- job parts: staff can also remove parts from a job, until the job is delivered
+-- (replaces the admin-only delete policy the loop above gives job_parts)
+DROP POLICY IF EXISTS job_parts_delete ON job_parts;
+CREATE POLICY job_parts_delete ON job_parts FOR DELETE TO authenticated
+  USING (
+    is_admin()
+    OR (is_active_member() AND EXISTS (
+      SELECT 1 FROM jobs WHERE jobs.job_id = job_parts.job_id AND jobs.status <> 'delivered'
+    ))
+  );
+
 -- sales records: staff record the payment at delivery, only admins can correct or remove it
 CREATE POLICY sales_records_select ON sales_records FOR SELECT TO authenticated
   USING (is_active_member());
@@ -457,3 +468,58 @@ alter default privileges in schema public
   grant select, insert, update, delete on tables to authenticated;
 alter default privileges in schema public
   grant usage, select on sequences to authenticated;
+
+-- ----------------------------------------------------------------------------
+-- section 11: job editing rules
+-- staff can edit open jobs; once a job is delivered only admins can change it
+-- only admins can move a job to another customer
+-- ----------------------------------------------------------------------------
+
+-- jobs: staff update open jobs (including setting them to delivered), admins update any job
+drop policy if exists jobs_update on jobs;
+create policy jobs_update on jobs for update to authenticated
+  using (is_admin() or (is_active_member() and status <> 'delivered'))
+  with check (is_active_member());
+
+-- jobs: moving a job to another customer is admin only
+-- auth.uid() is null in the sql editor, so database admins can still fix data there
+create or replace function check_job_customer_change() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if new.customer_id is distinct from old.customer_id
+     and auth.uid() is not null
+     and not is_admin() then
+    raise exception 'Only admins can move a job to another customer';
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists trg_job_customer_change on jobs;
+create trigger trg_job_customer_change
+  before update of customer_id on jobs
+  for each row execute function check_job_customer_change();
+
+-- job parts: staff add, change and remove parts while the job is open, admins any time
+drop policy if exists job_parts_insert on job_parts;
+drop policy if exists job_parts_update on job_parts;
+drop policy if exists job_parts_delete on job_parts;
+
+create policy job_parts_insert on job_parts for insert to authenticated
+  with check (is_admin() or (is_active_member() and exists (
+    select 1 from jobs j where j.job_id = job_parts.job_id and j.status <> 'delivered')));
+
+create policy job_parts_update on job_parts for update to authenticated
+  using (is_admin() or (is_active_member() and exists (
+    select 1 from jobs j where j.job_id = job_parts.job_id and j.status <> 'delivered')))
+  with check (is_admin() or (is_active_member() and exists (
+    select 1 from jobs j where j.job_id = job_parts.job_id and j.status <> 'delivered')));
+
+create policy job_parts_delete on job_parts for delete to authenticated
+  using (is_admin() or (is_active_member() and exists (
+    select 1 from jobs j where j.job_id = job_parts.job_id and j.status <> 'delivered')));
+
+-- job photos: staff add photos while the job is open, admins any time
+drop policy if exists job_photos_insert on job_photos;
+create policy job_photos_insert on job_photos for insert to authenticated
+  with check (is_admin() or (is_active_member() and exists (
+    select 1 from jobs j where j.job_id = job_photos.job_id and j.status <> 'delivered')));
