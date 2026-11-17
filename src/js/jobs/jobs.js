@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase.js";
 import { initPage } from "../shared/page.js";
+import { initNewJobModal, openNewJobModal } from "./new-job-modal.js";
 
 // label, pill class and dot class for each status (keys match the job_status enum)
 // class names are written out in full so tailwind can find them
@@ -23,7 +24,11 @@ let jobs = [];
 // what the user has picked
 let view = "active";      // 'active' or 'delivered'
 let statusFilter = "all"; // 'all' or a status key
+let creatorFilter = "all"; // 'all', 'none' or a profile_id (admin only)
 let currentPage = 1;
+
+// set in main() from the signed-in user's profile
+let isAdmin = false;
 
 // page elements
 const body = document.getElementById("jobs-body");
@@ -33,6 +38,7 @@ const noResults = document.getElementById("no-results");
 const totalCount = document.getElementById("total-count");
 const showingText = document.getElementById("showing-text");
 const pagination = document.getElementById("pagination");
+const creatorSelect = document.getElementById("creator-filter");
 
 const activeJobs = () => jobs.filter((j) => j.status !== "delivered");
 const deliveredJobs = () => jobs.filter((j) => j.status === "delivered");
@@ -52,7 +58,9 @@ function escapeHtml(text) {
 
 // one row of the table spanning every column, used for loading and error messages
 function showMessageRow(html) {
-    body.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-muted">${html}</td></tr>`;
+    // admins have the extra "created by" column
+    const columns = isAdmin ? 6 : 5;
+    body.innerHTML = `<tr><td colspan="${columns}" class="p-8 text-center text-muted">${html}</td></tr>`;
     noResults.classList.add("hidden");
 }
 
@@ -67,6 +75,8 @@ async function loadJobs() {
             problem_description,
             status,
             registered_at,
+            created_by,
+            creator:profiles ( full_name ),
             customers ( full_name ),
             vehicles ( make, model, year, plate_number )
         `)
@@ -91,9 +101,41 @@ async function loadJobs() {
             ? `${row.vehicles.year} ${row.vehicles.make} ${row.vehicles.model}`
             : "Unknown vehicle",
         plate: row.vehicles?.plate_number ?? "",
+        createdById: row.created_by,                  // null for jobs with no creator recorded
+        createdBy: row.creator?.full_name ?? "",
     }));
 
     return true;
+}
+
+// ---------- created by dropdown (admin only) ----------
+function renderCreatorOptions() {
+    if (!isAdmin) return;
+
+    // one option per person who has created a job, sorted by name
+    const people = new Map();
+    jobs.forEach((j) => {
+        if (j.createdById) people.set(j.createdById, j.createdBy || "Unknown user");
+    });
+    const sorted = [...people].sort((a, b) => a[1].localeCompare(b[1]));
+    const hasUnrecorded = jobs.some((j) => !j.createdById);
+
+    creatorSelect.innerHTML =
+        `<option value="all">Created by: Anyone</option>` +
+        sorted.map(([id, name]) => `<option value="${id}">${escapeHtml(name)}</option>`).join("") +
+        (hasUnrecorded ? `<option value="none">Not recorded</option>` : "");
+
+    // keep the choice if that person is still in the list
+    const stillThere = creatorFilter === "all" || people.has(creatorFilter) || (creatorFilter === "none" && hasUnrecorded);
+    if (!stillThere) creatorFilter = "all";
+    creatorSelect.value = creatorFilter;
+}
+
+// true if the job matches the created by dropdown
+function matchesCreator(job) {
+    if (!isAdmin || creatorFilter === "all") return true;
+    if (creatorFilter === "none") return !job.createdById;
+    return job.createdById === creatorFilter;
 }
 
 // ---------- active / delivered switch ----------
@@ -112,7 +154,7 @@ function renderToggle() {
 function renderChips() {
     // chips only make sense on the active view
     chipsBox.classList.toggle("hidden", view === "delivered");
-    const list = activeJobs();
+    const list = activeJobs().filter(matchesCreator);
 
     const chip = (key, label, count) => {
         const selected = statusFilter === key;
@@ -139,7 +181,7 @@ function renderTable() {
     const filtered = base.filter((j) => {
         const text = `${j.customer} ${j.vehicle} ${j.plate} ${j.problem}`.toLowerCase();
         const statusOk = view === "delivered" || statusFilter === "all" || j.status === statusFilter;
-        return text.includes(term) && statusOk;
+        return text.includes(term) && statusOk && matchesCreator(j);
     });
 
     // work out which rows belong on this page
@@ -163,6 +205,7 @@ function renderTable() {
             ${j.plate ? `<span class="plate">${escapeHtml(j.plate)}</span>` : ""}
           </div>
         </td>
+        ${isAdmin ? `<td class="px-5 py-4 text-sm ${j.createdBy ? "" : "text-muted"}">${j.createdBy ? escapeHtml(j.createdBy) : "—"}</td>` : ""}
         <td class="px-5 py-4 text-center">
           <span class="pill ${status.pill}">
             <span class="w-1.5 h-1.5 rounded-full bg-current"></span>${status.label}
@@ -227,6 +270,7 @@ function renderFooter(total, start, shown, totalPages) {
 function renderAll() {
     totalCount.textContent = `${view === "active" ? activeJobs().length : deliveredJobs().length} total`;
     renderToggle();
+    renderCreatorOptions();
     renderChips();
     renderTable();
 }
@@ -253,6 +297,14 @@ function setupEvents() {
         renderTable();
     });
 
+    // created by dropdown (admin only)
+    creatorSelect.addEventListener("change", () => {
+        creatorFilter = creatorSelect.value;
+        currentPage = 1;
+        renderChips();
+        renderTable();
+    });
+
     // search box
     search.addEventListener("input", () => {
         currentPage = 1;
@@ -274,13 +326,54 @@ function setupEvents() {
     });
 }
 
+// ---------- keyboard shortcut ----------
+
+// ctrl+j opens the new job modal (cmd+j on a mac)
+// ctrl+n can't be used: chrome keeps it for "new window" and pages can't take it over
+function setupNewJobShortcut() {
+    const platform = navigator.userAgentData?.platform ?? navigator.platform ?? "";
+    const isMac = /mac|iphone|ipad/i.test(platform);
+
+    // show the right hint on the button
+    document.querySelector("[data-shortcut-label]").textContent = isMac ? "⌘J" : "Ctrl+J";
+    document.getElementById("new-job-btn").setAttribute("aria-keyshortcuts", isMac ? "Meta+J" : "Control+J");
+
+    document.addEventListener("keydown", (e) => {
+        const modifier = isMac ? e.metaKey : e.ctrlKey;
+        if (!modifier || e.shiftKey || e.altKey || e.repeat || e.key.toLowerCase() !== "j") return;
+
+        e.preventDefault(); // stops the browser opening its downloads page
+        openNewJobModal(); // does nothing if the modal is already open
+    });
+}
+
 // ---------- start ----------
 async function main() {
     // checks the login, loads the profile and draws the sidebar
     const page = await initPage({ active: "jobs" });
     if (!page) return;
 
+    // admins get the "created by" column and filter
+    isAdmin = page.profile.role === "admin";
+    document.querySelectorAll(".admin-only").forEach((el) => el.classList.toggle("hidden", !isAdmin));
+
     setupEvents();
+
+    // after a new job is saved, clear the filters so it shows at the top of the active list
+    initNewJobModal({
+        userId: page.user.id,
+        onCreated: async () => {
+            view = "active";
+            statusFilter = "all";
+            currentPage = 1;
+            search.value = "";
+            if (await loadJobs()) renderAll();
+        },
+    });
+    document.getElementById("new-job-btn").addEventListener("click", openNewJobModal);
+
+    document.getElementById("new-job-btn").addEventListener("click", openNewJobModal);
+    setupNewJobShortcut();
 
     if (await loadJobs()) renderAll();
 }

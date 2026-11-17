@@ -54,7 +54,7 @@ CREATE TABLE jobs (
   delivered_at             timestamptz,
   customer_supplied_parts  boolean NOT NULL DEFAULT false,
   note_for_next_time       varchar(255),
-  created_by               uuid REFERENCES profiles(profile_id) ON DELETE SET NULL,
+  created_by               uuid DEFAULT auth.uid() REFERENCES profiles(profile_id) ON DELETE SET NULL,
   updated_at               timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT delivered_has_date CHECK (status <> 'delivered' OR delivered_at IS NOT NULL)
 );
