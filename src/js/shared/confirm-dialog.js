@@ -32,7 +32,7 @@ const $ = (id) => document.getElementById(id);
 function ensureMarkup() {
     if ($("confirm-dialog")) return;
     document.body.insertAdjacentHTML("beforeend", `
-        <div id="confirm-dialog" class="hidden fixed inset-0 z-[70] items-center justify-center p-4" role="alertdialog" aria-modal="true"
+        <div id="confirm-dialog" class="hidden fixed inset-0 z-70 items-center justify-center p-4" role="alertdialog" aria-modal="true"
             aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
             <div data-confirm-backdrop class="absolute inset-0 bg-black/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-150"></div>
             <div id="confirm-dialog-box" class="relative w-full max-w-sm bg-surface border rounded-2xl p-5 shadow-2xl flex flex-col gap-4 opacity-0 scale-95 transition duration-150">

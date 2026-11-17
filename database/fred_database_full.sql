@@ -221,7 +221,6 @@ CREATE INDEX idx_jobs_vehicle        ON jobs (vehicle_id);
 CREATE INDEX idx_jobs_customer       ON jobs (customer_id);
 CREATE INDEX idx_jobs_status         ON jobs (status);
 CREATE INDEX idx_jobs_registered     ON jobs (registered_at);
-CREATE INDEX idx_jobs_problem_search ON jobs USING gin (to_tsvector('english', problem_description));
 CREATE INDEX idx_appt_datetime       ON appointments (appointment_datetime);
 CREATE INDEX idx_appt_customer       ON appointments (customer_id);
 CREATE INDEX idx_photos_job          ON job_photos (job_id);
@@ -398,43 +397,6 @@ WHERE p.is_active
   AND p.alert_threshold IS NOT NULL
   AND u.used_in_period >= p.alert_threshold
   AND is_admin();
-
--- similar past jobs: same make and model, ranked by how closely the problem text matches
--- any shared word counts as a match (words are joined with "or")
-CREATE FUNCTION find_similar_jobs(p_job_id uuid)
-RETURNS TABLE (
-  similar_job_id      uuid,
-  plate_number        varchar,
-  make                varchar,
-  model               varchar,
-  vehicle_year        smallint,
-  problem_description text,
-  status              job_status,
-  registered_at       timestamptz,
-  relevance           real
-)
-LANGUAGE sql STABLE SECURITY INVOKER SET search_path = public AS $$
-  WITH src AS (
-    SELECT j1.job_id,
-           lower(v1.make)  AS make,
-           lower(v1.model) AS model,
-           replace(plainto_tsquery('english', j1.problem_description)::text, '&', '|')::tsquery AS q
-    FROM jobs j1
-    JOIN vehicles v1 ON v1.vehicle_id = j1.vehicle_id
-    WHERE j1.job_id = p_job_id
-  )
-  SELECT j2.job_id, v2.plate_number, v2.make, v2.model, v2.year,
-         j2.problem_description, j2.status, j2.registered_at,
-         ts_rank(to_tsvector('english', j2.problem_description), src.q) AS relevance
-  FROM src
-  JOIN vehicles v2 ON lower(v2.make) = src.make AND lower(v2.model) = src.model
-  JOIN jobs j2     ON j2.vehicle_id = v2.vehicle_id
-  WHERE j2.job_id <> src.job_id
-    AND to_tsvector('english', j2.problem_description) @@ src.q
-  ORDER BY relevance DESC, j2.registered_at DESC
-  LIMIT 10;
-$$;
-
 
 -- ----------------------------------------------------------------------------
 -- section 9: storage bucket for job photos (private, jpg and png only)

@@ -329,6 +329,13 @@ async function main() {
         },
     });
 
+    // open a job straight away when the url has ?job=<id> (the top bar search links here)
+    const linkedJob = new URLSearchParams(location.search).get("job");
+    if (linkedJob) {
+        history.replaceState(null, "", location.pathname); // so refreshing doesn't reopen it
+        openJobDrawer(linkedJob);
+    }
+
     if (await loadJobs()) renderAll();
 }
 

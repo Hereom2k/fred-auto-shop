@@ -11,7 +11,6 @@ export default defineConfig({
                 setPassword: resolve(__dirname, 'pages/set-password.html'),
                 dashboard: resolve(__dirname, 'pages/dashboard.html'),
                 jobs: resolve(__dirname, 'pages/jobs.html'),
-                jobDetails: resolve(__dirname, 'pages/job-details.html'),
                 customers: resolve(__dirname, 'pages/customers.html'),
                 customerDetails: resolve(__dirname, 'pages/customer-details.html'),
                 appointments: resolve(__dirname, 'pages/appointments.html'),
