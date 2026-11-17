@@ -6,7 +6,8 @@
 //   openJobDrawer(jobId);
 
 import { supabase } from "../lib/supabase.js";
-import { confirmDialog } from "../shared/confirm-dialog.js";
+import { confirmDialog, isConfirmOpen } from "../shared/confirm-dialog.js";
+import { matchesShortcut, shortcutHint, shortcutAria } from "../shared/shortcuts.js";
 
 const BUCKET = "job-photos";
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // same 5 mb limit as the storage bucket
@@ -109,6 +110,11 @@ let viewerIndex = 0;   // photo shown in the lightbox
 let lastFocused = null;
 
 const $ = (id) => document.getElementById(id);
+
+// changes a button's text without wiping its shortcut hint
+const setLabel = (btn, text) => {
+    btn.querySelector("[data-btn-label]").textContent = text;
+};
 const isDelivered = () => job?.status === "delivered";
 
 // ---------- markup: frame ----------
@@ -178,7 +184,9 @@ function drawerShell() {
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="button" data-jd-close class="btn btn-secondary py-2 text-xs uppercase tracking-wider">Close</button>
-                    <button type="button" id="jd-save" disabled class="btn btn-primary py-2 text-xs uppercase tracking-wider">Save changes</button>
+                    <button type="button" id="jd-save" disabled aria-keyshortcuts="${shortcutAria("s")}" class="btn btn-primary relative group py-2 text-xs uppercase tracking-wider">
+                        <span data-btn-label>Save changes</span>${shortcutHint("s", "above")}
+                    </button>
                 </div>
             </footer>
         </aside>
@@ -219,7 +227,9 @@ function drawerShell() {
                     <p id="jd-edit-message" class="text-xs text-muted" role="status"></p>
                     <div class="flex items-center gap-2">
                         <button type="button" data-edit-cancel class="btn btn-secondary py-2 text-xs uppercase tracking-wider">Cancel</button>
-                        <button type="submit" id="jd-edit-save" class="btn btn-primary py-2 text-xs uppercase tracking-wider">Save</button>
+                        <button type="submit" id="jd-edit-save" aria-keyshortcuts="${shortcutAria("s")}" class="btn btn-primary relative group py-2 text-xs uppercase tracking-wider">
+                            <span data-btn-label>Save</span>${shortcutHint("s", "above")}
+                        </button>
                     </div>
                 </footer>
             </form>
@@ -238,7 +248,7 @@ function drawerShell() {
                 <p id="jd-confirm-error" class="hidden text-xs text-status-overdue"></p>
                 <div class="flex justify-end gap-2">
                     <button type="button" data-confirm-cancel class="btn btn-secondary py-2 text-xs uppercase tracking-wider">Cancel</button>
-                    <button type="button" id="jd-confirm-delete" class="btn btn-danger py-2 text-xs uppercase tracking-wider">${icon("trash")} Delete</button>
+                    <button type="button" id="jd-confirm-delete" class="btn bg-status-overdue/10 text-status-overdue border border-status-overdue/40 hover:bg-status-overdue/20 py-2 text-xs uppercase tracking-wider">${icon("trash")} Delete</button>
                 </div>
             </div>
         </div>
@@ -1023,7 +1033,7 @@ async function saveJobFields({ includeStatus }) {
 
 function setBusy(busy, label) {
     isBusy = busy;
-    $("jd-save").textContent = busy && label === "save" ? "Saving..." : "Save changes";
+    setLabel($("jd-save"), busy && label === "save" ? "Saving..." : "Save changes");
     $("jd-deliver").lastChild.textContent = busy && label === "deliver" ? " Delivering..." : " Mark as delivered";
     refresh();
 }
@@ -1156,7 +1166,7 @@ function openEdit(kind) {
     editKind = kind;
     setEditMessage("");
     $("jd-edit-save").disabled = false;
-    $("jd-edit-save").textContent = "Save";
+    setLabel($("jd-edit-save"), "Save");
 
     if (kind === "parts") {
         // start from what's saved
@@ -1223,10 +1233,10 @@ async function saveEdit(e) {
         if (snapshot(draft) === snapshot(original)) return closeEdit();
 
         btn.disabled = true;
-        btn.textContent = "Saving...";
+        setLabel(btn, "Saving...");
         const error = await syncParts();
         btn.disabled = false;
-        btn.textContent = "Save";
+        setLabel(btn, "Save");
 
         if (error) {
             console.error("Could not update parts:", error);
@@ -1246,12 +1256,12 @@ async function saveEdit(e) {
         if (text === job.problem_description) return closeEdit();
 
         btn.disabled = true;
-        btn.textContent = "Saving...";
+        setLabel(btn, "Saving...");
         // .select() returns the updated row, so a change blocked by row level security shows up as no rows
         const { data, error } = await supabase
             .from("jobs").update({ problem_description: text }).eq("job_id", job.job_id).select("problem_description");
         btn.disabled = false;
-        btn.textContent = "Save";
+        setLabel(btn, "Save");
 
         if (error || !data?.length) {
             console.error("Could not update problem description:", error);
@@ -1275,7 +1285,7 @@ async function saveEdit(e) {
     if (date > todayIso()) return setEditMessage("The payment date can't be in the future.", "error");
 
     btn.disabled = true;
-    btn.textContent = "Saving...";
+    setLabel(btn, "Saving...");
 
     // .select() returns the updated row, so a change blocked by row level security shows up as no rows
     const { data, error } = await supabase
@@ -1285,7 +1295,7 @@ async function saveEdit(e) {
         .select("sale_id, amount_paid, payment_date, receipt_photo_id");
 
     btn.disabled = false;
-    btn.textContent = "Save";
+    setLabel(btn, "Save");
 
     if (error || !data?.length) {
         console.error("Could not update payment:", error);
@@ -1562,6 +1572,16 @@ export function initJobDrawer({ userId, isAdmin = false, onSaved = () => {} } = 
     // escape closes the top-most thing: viewer, confirm box, menus, then the drawer
     document.addEventListener("keydown", (e) => {
         if (!isOpen) return;
+
+        // ctrl+s (cmd+s on a mac) saves the edit box if it's open, otherwise the drawer
+        if (matchesShortcut(e, "s")) {
+            e.preventDefault(); // stops the browser's "save page" window
+            if (isConfirmOpen() || viewerOpen() || pendingDelete || isBusy) return;
+            if (editOpen()) return $("jd-edit-form").requestSubmit();
+            if (!$("jd-save").disabled && !$("jd-save").classList.contains("hidden")) save();
+            return;
+        }
+
         if (viewerOpen()) {
             if (e.key === "Escape") closeViewer();
             if (e.key === "ArrowRight") stepViewer(1);

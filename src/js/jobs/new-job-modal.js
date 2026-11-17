@@ -6,7 +6,8 @@
 //   openNewJobModal();
 
 import { supabase } from "../lib/supabase.js";
-import { confirmDialog } from "../shared/confirm-dialog.js";
+import { confirmDialog, isConfirmOpen } from "../shared/confirm-dialog.js";
+import { matchesShortcut, shortcutHint, shortcutAria } from "../shared/shortcuts.js";
 
 // same rule as the customers.phone_number check in the database
 const PHONE_PATTERN = /^[0-9+ -]{7,20}$/;
@@ -227,7 +228,9 @@ function modalShell() {
                     <p id="new-job-message" class="text-xs text-muted" role="status"><span class="text-status-overdue">*</span> Required fields</p>
                     <div class="flex items-center gap-3">
                         <button type="button" data-modal-close class="btn btn-secondary py-2 text-xs uppercase tracking-wider">Cancel</button>
-                        <button type="submit" id="new-job-save" class="btn btn-primary py-2 text-xs uppercase tracking-wider">Save job</button>
+                        <button type="submit" id="new-job-save" aria-keyshortcuts="${shortcutAria("s")}" class="btn btn-primary relative group py-2 text-xs uppercase tracking-wider">
+                            <span data-btn-label>Save job</span>${shortcutHint("s", "above")}
+                        </button>
                     </div>
                 </footer>
             </form>
@@ -534,7 +537,7 @@ async function save(e) {
     isSaving = true;
     const btn = $("new-job-save");
     btn.disabled = true;
-    btn.textContent = "Saving...";
+    btn.querySelector("[data-btn-label]").textContent = "Saving...";
     setFooterMessage(DEFAULT_FOOTER);
 
     // status and registered_at use the database defaults (not_started, now())
@@ -553,7 +556,7 @@ async function save(e) {
 
     isSaving = false;
     btn.disabled = false;
-    btn.textContent = "Save job";
+    btn.querySelector("[data-btn-label]").textContent = "Save job";
 
     if (error) {
         console.error("Could not create job:", error);
@@ -723,6 +726,12 @@ export function initNewJobModal({ userId, onCreated = () => {} } = {}) {
     // escape closes the modal
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && isOpen) closeNewJobModal();
+
+        // ctrl+s (cmd+s on a mac) saves the job, same as the save job button
+        if (isOpen && matchesShortcut(e, "s")) {
+            e.preventDefault(); // stops the browser's "save page" window
+            if (!isSaving && !isConfirmOpen()) $("new-job-form").requestSubmit();
+        }
     });
 
     // warn before leaving the page with a half-filled job

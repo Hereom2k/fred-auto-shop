@@ -89,6 +89,9 @@ function finish(result) {
     resolve(result);
 }
 
+// true while a question box is on screen
+export const isConfirmOpen = () => resolveOpen !== null;
+
 export function confirmDialog({
     title,
     message = "",
