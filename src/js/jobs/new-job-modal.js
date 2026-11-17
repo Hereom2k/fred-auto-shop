@@ -6,6 +6,7 @@
 //   openNewJobModal();
 
 import { supabase } from "../lib/supabase.js";
+import { confirmDialog } from "../shared/confirm-dialog.js";
 
 // same rule as the customers.phone_number check in the database
 const PHONE_PATTERN = /^[0-9+ -]{7,20}$/;
@@ -657,9 +658,17 @@ export async function openNewJobModal() {
     $("new-job-customer").focus();
 }
 
-export function closeNewJobModal() {
+export async function closeNewJobModal() {
     if (!isOpen || isSaving) return;
-    if (hasChanges() && !confirm("Discard this new job?")) return;
+    if (hasChanges()) {
+        const discard = await confirmDialog({
+            title: "Discard this new job?",
+            message: "The details you've entered will be lost.",
+            confirmLabel: "Discard",
+            cancelLabel: "Keep editing",
+        });
+        if (!discard || !isOpen) return;
+    }
     hide();
 }
 
