@@ -58,6 +58,7 @@ let customers = [];     // every customer, for the dropdown
 let vehicles = [];      // vehicles of the selected customer
 let isOpen = false;
 let isSaving = false;
+let prefilledCustomer = ""; // customer picked by openNewJobModal({ customerId }), see hasChanges
 let lastFocused = null; // element to give focus back to when the modal closes
 
 const $ = (id) => document.getElementById(id);
@@ -599,8 +600,10 @@ const toastShell = () => `
 
 // true if the user has typed or picked anything
 function hasChanges() {
+    // a customer filled in by openNewJobModal({ customerId }) doesn't count as the user's change
+    if ($("new-job-customer").value !== prefilledCustomer) return true;
     const ids = [
-        "new-job-customer", "new-job-problem", "new-job-expected",
+        "new-job-problem", "new-job-expected",
         "new-customer-name", "new-customer-phone",
         "new-vehicle-make", "new-vehicle-model", "new-vehicle-year", "new-vehicle-plate",
     ];
@@ -642,10 +645,14 @@ function hide() {
     lastFocused?.focus?.();
 }
 
-export async function openNewJobModal() {
+// customerId / vehicleId are optional and pick that customer (and vehicle) for the user,
+// e.g. openNewJobModal({ customerId }) from the customer profile page
+// (when used straight as a click handler the click event is passed in, which has neither, so nothing is picked)
+export async function openNewJobModal({ customerId = "", vehicleId = "" } = {}) {
     if (isOpen) return;
     lastFocused = document.activeElement;
 
+    prefilledCustomer = "";
     resetForm();
     $("new-job-customer").innerHTML = `<option value="">Loading customers...</option>`;
     fillVehicleSelect();
@@ -658,6 +665,15 @@ export async function openNewJobModal() {
         return;
     }
     fillCustomerSelect();
+
+    if (customerId && customers.some((c) => c.customer_id === customerId)) {
+        prefilledCustomer = customerId;
+        fillCustomerSelect(customerId);
+        await onCustomerChange();
+        if (vehicleId && vehicles.some((v) => v.vehicle_id === vehicleId)) fillVehicleSelect(vehicleId);
+        $("new-job-problem").focus();
+        return;
+    }
     $("new-job-customer").focus();
 }
 
