@@ -1,0 +1,883 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Space+Grotesk:wght@100..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-secondary-fixed-variant":"#003ea8","on-tertiary-container":"#4700aa","tertiary":"#d0bcff","tertiary-fixed-dim":"#d0bcff","on-secondary":"#002a78","primary-container":"#14b8a6","surface-container-high":"#292a2b","on-primary":"#003731","on-secondary-container":"#cdd7ff","secondary-container":"#0053db","error-container":"#93000a","on-surface-variant":"#bbcac6","on-tertiary-fixed-variant":"#5516be","surface-container-highest":"#343536","on-tertiary":"#3c0091","primary":"#4fdbc8","background":"#121314","on-secondary-fixed":"#00174b","on-error":"#690005","secondary-fixed-dim":"#b4c5ff","on-background":"#e3e2e3","surface":"#121314","primary-fixed-dim":"#4fdbc8","on-primary-fixed":"#00201c","secondary-fixed":"#dbe1ff","tertiary-fixed":"#e9ddff","outline":"#859490","surface-variant":"#343536","on-tertiary-fixed":"#23005c","inverse-on-surface":"#303031","outline-variant":"#3c4947","surface-container":"#1f2021","surface-bright":"#38393a","surface-tint":"#4fdbc8","surface-container-lowest":"#0d0e0f","surface-container-low":"#1b1c1d","on-primary-container":"#00423b","tertiary-container":"#b192ff","primary-fixed":"#71f8e4","on-surface":"#e3e2e3","error":"#ffb4ab","inverse-surface":"#e3e2e3","secondary":"#b4c5ff","inverse-primary":"#006b5f","on-primary-fixed-variant":"#005048","surface-dim":"#121314","on-error-container":"#ffdad6"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin":"1rem","space-lg":"1rem","space-md":"0.75rem","space-xl":"1.5rem","space-xs":"0.25rem","gutter":"1rem","gutter-desktop":"1.5rem","space-sm":"0.5rem","margin-desktop":"2rem"},"fontFamily":{"label-xs-caps":["Inter"],"body-md":["Inter"],"headline-lg":["Space Grotesk"],"headline-sm":["Space Grotesk"],"body-sm-italic":["Inter"],"label-md":["Inter"],"title-md":["Inter"],"headline-lg-mobile":["Space Grotesk"]},"fontSize":{"label-xs-caps":["0.6875rem",{"lineHeight":"0.875rem","letterSpacing":"0.06em","fontWeight":"700"}],"body-md":["0.875rem",{"lineHeight":"1.25rem","fontWeight":"400"}],"headline-lg":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"0.05em","fontWeight":"700"}],"headline-sm":["1.125rem",{"lineHeight":"1.5rem","letterSpacing":"0.025em","fontWeight":"600"}],"body-sm-italic":["0.8125rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"label-md":["0.875rem",{"lineHeight":"1.25rem","fontWeight":"500"}],"title-md":["1rem",{"lineHeight":"1.375rem","fontWeight":"600"}],"headline-lg-mobile":["1.375rem",{"lineHeight":"1.75rem","letterSpacing":"0.04em","fontWeight":"700"}]}}}};</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-60 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="flex flex-col"><div class="h-16 px-space-lg flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary-container"><span class="material-symbols-outlined text-[20px]">build</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm tracking-widest text-on-surface font-bold">AUTOTRACK</span></div></div><div class="px-space-md py-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold rounded-lg shadow-[0_4px_12px_rgba(20,184,166,0.2)]"><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="dashboard" href="#">Dashboard</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="jobs" href="#">Jobs</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="customers" href="#">Customers</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="appointments" href="#">Appointments</a><a aria-current="page" class="flex items-center px-space-md py-space-sm transition-colors bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold rounded-lg shadow-[0_4px_12px_rgba(20,184,166,0.2)]" data-path="reports" href="#">Reports</a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="parts-alerts" href="#"><span class="">Parts Alerts</span><span class="px-1.5 py-0.5 rounded-full bg-error-container/30 text-error font-label-xs-caps text-[11px] font-bold">2</span></a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="staff" href="#">Staff</a></nav></div></div><div class="p-space-md bg-surface-container-low"><div class="flex items-center gap-space-md p-space-sm rounded-lg bg-surface-container-lowest"><div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary-container font-headline-sm text-headline-sm font-bold">FA</div><div class="flex flex-col min-w-0 flex-1"><span class="font-label-md text-label-md font-semibold text-on-surface truncate">Fred</span><span class="font-label-xs-caps text-label-xs-caps text-primary tracking-wider uppercase">Admin</span></div><a class="p-space-xs rounded-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" data-path="sign-out" href="#" title="Sign Out"><span class="material-symbols-outlined text-[18px]">logout</span></a></div></div></aside><div class="pl-60"><header class="fixed top-0 left-60 right-0 h-16 bg-surface/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.25)] flex items-center justify-between px-gutter-desktop"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface-variant font-label-xs-caps text-label-xs-caps uppercase tracking-wider"><span class="material-symbols-outlined text-[16px] text-primary">dark_mode</span><span class="">Telemetry Dark</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative w-full pt-16 bg-surface min-h-screen px-gutter-desktop"><div class="flex flex-col w-full">
+<style>
+    @media print {
+      body, html {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      aside, header, #dev-state-switcher, .no-print {
+        display: none !important;
+      }
+      .pl-60 {
+        padding-left: 0 !important;
+      }
+      main {
+        padding: 0 !important;
+        background: #ffffff !important;
+      }
+      .print-invert {
+        background: #ffffff !important;
+        color: #111111 !important;
+        box-shadow: none !important;
+      }
+      .print-border {
+        border: 1px solid #e2e8f0 !important;
+      }
+      .text-on-surface, .text-on-surface-variant {
+        color: #1e293b !important;
+      }
+      .text-primary {
+        color: #0d9488 !important;
+      }
+      .bg-surface, .bg-surface-container, .bg-surface-container-low, .bg-surface-container-high, .bg-surface-container-lowest {
+        background: #f8fafc !important;
+      }
+    }
+  </style>
+<!-- Dev Interactive State Switcher Bar -->
+<div class="no-print w-full bg-surface-container-lowest p-space-sm mb-space-lg rounded-xl flex flex-wrap items-center justify-between gap-space-md shadow-md" id="dev-state-switcher">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">tune</span>
+<span class="font-label-xs-caps text-label-xs-caps tracking-wider uppercase text-on-surface-variant">Dev State Simulator:</span>
+</div>
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-primary-container text-on-primary-container font-bold shadow-sm" id="btn-state-default" onclick="setUIState('default')">
+        Default Data
+      </button>
+<button class="px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-surface-container-high text-on-surface-variant hover:text-on-surface" id="btn-state-empty-charts" onclick="setUIState('empty-charts')">
+        Empty Charts
+      </button>
+<button class="px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-surface-container-high text-on-surface-variant hover:text-on-surface" id="btn-state-empty-sales" onclick="setUIState('empty-sales')">
+        Empty Sales
+      </button>
+<button class="px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-surface-container-high text-on-surface-variant hover:text-on-surface" id="btn-state-loading" onclick="setUIState('loading')">
+        Loading Skeleton
+      </button>
+<button class="px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-surface-container-high text-on-surface-variant hover:text-on-surface" id="btn-state-error" onclick="setUIState('error')">
+        Error State
+      </button>
+<button class="px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-surface-bright text-primary hover:bg-surface-container-high flex items-center gap-1" onclick="window.print()">
+<span class="material-symbols-outlined text-[14px]">print</span> Print Mode
+      </button>
+</div>
+</div>
+<!-- Top Header & Primary Action Controls -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg mb-space-xl pb-space-lg">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-md flex-wrap">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Reports</h1>
+<div class="flex items-center gap-1.5 px-space-md py-0.5 rounded-full bg-surface-container-high shadow-inner">
+<span class="material-symbols-outlined text-primary text-[15px]">lock</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-primary font-bold tracking-widest">Admin Only</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5 px-space-md py-0.5 rounded-full bg-surface-container-low text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-xs-caps text-label-xs-caps text-on-surface-variant">Admin Account: Fred (Full Access)</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Aggregated automotive bay diagnostics, completed job volume, turnaround cadence, and gross revenue telemetry.
+      </p>
+</div>
+<!-- Controls Bar -->
+<div class="no-print flex flex-wrap items-center gap-space-md">
+<!-- Period Selector -->
+<div class="flex p-0.5 rounded-lg bg-surface-container-low shadow-inner">
+<button class="period-tab px-space-md py-space-xs rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" onclick="selectPeriod(this, 'day')">Day</button>
+<button class="period-tab active-period px-space-md py-space-xs rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider bg-surface-container-highest text-primary font-bold shadow-sm" onclick="selectPeriod(this, 'week')">Week</button>
+<button class="period-tab px-space-md py-space-xs rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" onclick="selectPeriod(this, 'month')">Month</button>
+<button class="period-tab px-space-md py-space-xs rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" onclick="selectPeriod(this, 'year')">Year</button>
+</div>
+<!-- Date Range Navigator -->
+<div class="flex items-center rounded-lg bg-surface-container-low px-space-xs py-0.5 shadow-sm">
+<button class="w-8 h-8 flex items-center justify-center rounded-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Previous Period">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="px-space-md font-label-md text-label-md font-medium text-on-surface select-none">26 Oct – 1 Nov 2026</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Next Period">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<!-- Export / Print Trigger CTA -->
+<button class="flex items-center gap-space-xs px-space-lg py-2.5 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold hover:bg-primary transition-all shadow-[0_4px_12px_rgba(20,184,166,0.25)] active:scale-[0.98]" onclick="window.print()">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span class="">Export / Print</span>
+</button>
+</div>
+</div>
+<!-- Loading State Wrapper (Controlled via JS) -->
+<div class="hidden flex-col gap-space-lg w-full" id="state-loading-view">
+<!-- Skeleton Summary Cards -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-space-md">
+<div class="bg-surface-container-low p-space-lg rounded-xl h-32 animate-pulse flex flex-col justify-between">
+<div class="w-24 h-3 bg-surface-container-high rounded"></div>
+<div class="w-16 h-8 bg-surface-container-high rounded"></div>
+<div class="w-20 h-4 bg-surface-container-high rounded-full"></div>
+</div>
+<div class="bg-surface-container-low p-space-lg rounded-xl h-32 animate-pulse flex flex-col justify-between">
+<div class="w-24 h-3 bg-surface-container-high rounded"></div>
+<div class="w-16 h-8 bg-surface-container-high rounded"></div>
+<div class="w-20 h-4 bg-surface-container-high rounded-full"></div>
+</div>
+<div class="bg-surface-container-low p-space-lg rounded-xl h-32 animate-pulse flex flex-col justify-between">
+<div class="w-24 h-3 bg-surface-container-high rounded"></div>
+<div class="w-16 h-8 bg-surface-container-high rounded"></div>
+<div class="w-20 h-4 bg-surface-container-high rounded-full"></div>
+</div>
+<div class="bg-surface-container-low p-space-lg rounded-xl h-32 animate-pulse flex flex-col justify-between">
+<div class="w-24 h-3 bg-surface-container-high rounded"></div>
+<div class="w-16 h-8 bg-surface-container-high rounded"></div>
+<div class="w-20 h-4 bg-surface-container-high rounded-full"></div>
+</div>
+<div class="bg-surface-container-low p-space-lg rounded-xl h-32 animate-pulse flex flex-col justify-between">
+<div class="w-24 h-3 bg-surface-container-high rounded"></div>
+<div class="w-24 h-8 bg-surface-container-high rounded"></div>
+<div class="w-20 h-4 bg-surface-container-high rounded-full"></div>
+</div>
+</div>
+<!-- Skeleton Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+<div class="bg-surface-container-low p-space-xl rounded-xl h-80 animate-pulse"></div>
+<div class="bg-surface-container-low p-space-xl rounded-xl h-80 animate-pulse"></div>
+</div>
+<!-- Skeleton Table -->
+<div class="bg-surface-container-low p-space-xl rounded-xl h-64 animate-pulse"></div>
+</div>
+<!-- Error State Wrapper (Controlled via JS) -->
+<div class="hidden flex-col items-center justify-center p-space-xl bg-surface-container-low rounded-xl text-center py-20 shadow-md" id="state-error-view">
+<div class="w-16 h-16 rounded-full bg-error-container/30 flex items-center justify-center text-error mb-space-md shadow-inner">
+<span class="material-symbols-outlined text-[32px]">sync_problem</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-space-xs">Telemetry Synchronization Failed</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mb-space-lg">
+      Failed to load report metrics. Database socket telemetry connection timed out while querying period range: 26 Oct to 1 Nov 2026.
+    </p>
+<button class="flex items-center gap-space-xs px-space-xl py-space-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md font-semibold hover:bg-primary transition-all shadow-[0_4px_12px_rgba(20,184,166,0.3)]" onclick="setUIState('default')">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+<span class="">Retry Metrics Fetch</span>
+</button>
+</div>
+<!-- Main Content Container -->
+<div class="flex flex-col gap-space-xl w-full" id="state-main-content">
+<!-- 5 KPI Summary Cards Row -->
+<section class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-space-md w-full">
+<!-- 1. Jobs completed -->
+<div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-sm relative overflow-hidden group hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant">Jobs completed</span>
+<span class="material-symbols-outlined text-primary text-[18px]">task_alt</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">24</span>
+<!-- Inline Sparkline -->
+<svg class="w-16 h-7 text-primary overflow-visible" fill="none" viewBox="0 0 60 25">
+<path d="M2 20 L12 16 L22 18 L32 10 L42 12 L52 4 L58 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<circle cx="58" cy="6" fill="currentColor" r="2.5"></circle>
+</svg>
+</div>
+<div class="mt-space-sm flex items-center gap-1.5">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-xs-caps text-label-xs-caps font-semibold">
+            +14.2%
+          </span>
+<span class="font-label-xs-caps text-label-xs-caps text-on-surface-variant">vs prev. period</span>
+</div>
+</div>
+<!-- 2. New customers -->
+<div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-sm hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant">New customers</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">person_add</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">7</span>
+<div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[16px]">groups</span>
+</div>
+</div>
+<div class="mt-space-sm flex items-center gap-1.5">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-secondary-container/20 text-secondary-fixed font-label-xs-caps text-label-xs-caps font-semibold">
+            +2
+          </span>
+<span class="font-label-xs-caps text-label-xs-caps text-on-surface-variant">vs last week</span>
+</div>
+</div>
+<!-- 3. Average turnaround -->
+<div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-sm hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant">Avg. turnaround</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">schedule</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">1.8 <span class="font-label-md text-label-md font-normal text-on-surface-variant">days</span></span>
+<span class="material-symbols-outlined text-primary text-[20px]">speed</span>
+</div>
+<div class="mt-space-sm flex items-center gap-1.5">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-xs-caps text-label-xs-caps font-semibold">
+            -0.4 days
+          </span>
+<span class="font-label-xs-caps text-label-xs-caps text-on-surface-variant">improvement</span>
+</div>
+</div>
+<!-- 4. Missed appointments (Active Red Alert) -->
+<div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-[0_0_15px_rgba(239,68,68,0.15)] relative overflow-hidden group hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-error font-semibold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+            Missed appts
+          </span>
+<span class="material-symbols-outlined text-error text-[18px]">warning</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-error font-bold tracking-tight">2</span>
+<span class="px-2 py-0.5 rounded bg-error-container/40 text-error font-label-xs-caps text-label-xs-caps font-bold uppercase tracking-wider">
+            Action needed
+          </span>
+</div>
+<div class="mt-space-sm flex items-center justify-between text-on-surface-variant">
+<span class="font-label-xs-caps text-label-xs-caps text-error/90 font-medium">Unresolved no-shows</span>
+<a class="font-label-xs-caps text-label-xs-caps text-primary hover:underline flex items-center" href="#missed-appointments-section">Review ↓</a>
+</div>
+</div>
+<!-- 5. Revenue -->
+<div class="col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1 bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-sm hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant">Total revenue</span>
+<span class="material-symbols-outlined text-primary text-[18px]">payments</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div>
+<div class="font-label-xs-caps text-label-xs-caps text-on-surface-variant tracking-wider uppercase font-bold">GYD</div>
+<span class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">1.485M</span>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]">trending_up</span>
+</div>
+<div class="mt-space-sm flex items-center gap-1.5">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-xs-caps text-label-xs-caps font-semibold">
+            +8.5%
+          </span>
+<span class="font-label-xs-caps text-label-xs-caps text-on-surface-variant">vs prev. period</span>
+</div>
+</div>
+</section>
+<!-- Operational Diagnostic Charts Section (2 Columns) -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg w-full">
+<!-- Left Card: Jobs Completed Daily Bar Chart -->
+<div class="bg-surface-container-low p-space-xl rounded-xl shadow-md flex flex-col justify-between min-h-[380px]">
+<div class="flex items-start justify-between mb-space-md">
+<div class="flex flex-col">
+<h2 class="font-title-md text-title-md font-semibold text-on-surface">Jobs Completed by Bay Cadence</h2>
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant">Monday to Sunday throughput</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1 font-label-xs-caps text-label-xs-caps text-on-surface-variant">
+<span class="w-2.5 h-0.5 bg-primary/60 inline-block"></span> Avg: 3.4 / day
+            </span>
+</div>
+</div>
+<!-- Dynamic Chart Area or Empty State -->
+<div class="relative w-full flex-1 flex flex-col justify-end pt-8 pb-2" id="chart-jobs-container">
+<!-- Background Benchmark Line -->
+<div class="absolute inset-x-0 top-[45%] h-px border-b border-dashed border-outline-variant flex items-center justify-end pointer-events-none">
+<span class="font-label-xs-caps text-[10px] text-on-surface-variant pr-2 bg-surface-container-low">Target Threshold (3.4)</span>
+</div>
+<!-- SVG Bar Graphic Visualization with Tooltips -->
+<div class="grid grid-cols-7 gap-2 sm:gap-4 items-end h-52 w-full px-2 z-10">
+<!-- Mon: 4 -->
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-highest px-2 py-1 rounded text-[11px] font-label-xs-caps text-on-surface shadow-md">4 jobs</div>
+<div class="w-full max-w-[42px] bg-primary-container/80 hover:bg-primary rounded-t-lg transition-all" style="height: 60%;"></div>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-surface-variant group-hover:text-primary transition-colors">Mon</span>
+</div>
+<!-- Tue: 5 -->
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-highest px-2 py-1 rounded text-[11px] font-label-xs-caps text-on-surface shadow-md">5 jobs</div>
+<div class="w-full max-w-[42px] bg-primary-container/80 hover:bg-primary rounded-t-lg transition-all" style="height: 75%;"></div>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-surface-variant group-hover:text-primary transition-colors">Tue</span>
+</div>
+<!-- Wed: 3 -->
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-highest px-2 py-1 rounded text-[11px] font-label-xs-caps text-on-surface shadow-md">3 jobs</div>
+<div class="w-full max-w-[42px] bg-primary-container/80 hover:bg-primary rounded-t-lg transition-all" style="height: 45%;"></div>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-surface-variant group-hover:text-primary transition-colors">Wed</span>
+</div>
+<!-- Thu: 6 -->
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-highest px-2 py-1 rounded text-[11px] font-label-xs-caps text-on-surface shadow-md">6 jobs (Peak)</div>
+<div class="w-full max-w-[42px] bg-primary hover:bg-primary-fixed rounded-t-lg transition-all shadow-[0_0_12px_rgba(79,219,200,0.3)]" style="height: 90%;"></div>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-primary font-bold">Thu</span>
+</div>
+<!-- Fri: 4 -->
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-highest px-2 py-1 rounded text-[11px] font-label-xs-caps text-on-surface shadow-md">4 jobs</div>
+<div class="w-full max-w-[42px] bg-primary-container/80 hover:bg-primary rounded-t-lg transition-all" style="height: 60%;"></div>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-surface-variant group-hover:text-primary transition-colors">Fri</span>
+</div>
+<!-- Sat: 2 -->
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-highest px-2 py-1 rounded text-[11px] font-label-xs-caps text-on-surface shadow-md">2 jobs</div>
+<div class="w-full max-w-[42px] bg-primary-container/60 hover:bg-primary rounded-t-lg transition-all" style="height: 30%;"></div>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-surface-variant group-hover:text-primary transition-colors">Sat</span>
+</div>
+<!-- Sun: 0 -->
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-highest px-2 py-1 rounded text-[11px] font-label-xs-caps text-on-surface shadow-md">0 jobs (Closed)</div>
+<div class="w-full max-w-[42px] bg-surface-container-high rounded-t-lg" style="height: 4px;"></div>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-surface-variant">Sun</span>
+</div>
+</div>
+</div>
+<!-- Empty Charts Replacement View -->
+<div class="hidden flex-col items-center justify-center p-space-lg text-center my-auto" id="chart-jobs-empty">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-space-sm">
+<span class="material-symbols-outlined text-[28px]">bar_chart</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface font-semibold">No data for this period</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs mt-1">There are no job log records registered for the current telemetry window.</p>
+<button class="mt-space-md px-space-md py-1.5 rounded-lg bg-surface-container-high text-primary hover:bg-surface-bright font-label-xs-caps text-label-xs-caps uppercase tracking-wider" onclick="setUIState('default')">
+            Reset to Current Week
+          </button>
+</div>
+<div class="pt-space-md flex items-center justify-between text-on-surface-variant font-label-xs-caps text-label-xs-caps">
+<span class="">Total: 24 Bay Cycles</span>
+<span class="text-primary font-semibold">Maximum: 6 (Thu)</span>
+</div>
+</div>
+<!-- Right Card: Job Status Breakdown Donut Chart -->
+<div class="bg-surface-container-low p-space-xl rounded-xl shadow-md flex flex-col justify-between min-h-[380px]">
+<div class="flex items-start justify-between mb-space-sm">
+<div class="flex flex-col">
+<h2 class="font-title-md text-title-md font-semibold text-on-surface">Job Status Breakdown</h2>
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant">Current operational queue lifecycle</span>
+</div>
+<div class="px-space-md py-0.5 rounded-full bg-surface-container-high font-label-xs-caps text-label-xs-caps font-semibold text-on-surface">
+            43 Tracked
+          </div>
+</div>
+<!-- Donut & Legend Split Container -->
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-space-lg items-center my-auto py-space-sm" id="donut-content-container">
+<!-- Donut SVG Visualization -->
+<div class="sm:col-span-5 flex items-center justify-center relative">
+<svg class="w-48 h-48 -rotate-90 transform" viewBox="0 0 160 160">
+<!-- Background Ring -->
+<circle cx="80" cy="80" fill="transparent" r="62" stroke="#22252a" stroke-width="18"></circle>
+<!-- Segments based on 43 total:
+                   Circumference = 2 * PI * 62 = 389.55
+                   Delivered: 24/43 = 55.8% -> 217.4 stroke-dasharray (Green #10b981)
+                   In Progress: 7/43 = 16.3% -> 63.5 (Blue #3b82f6)
+                   Not Started: 4/43 = 9.3% -> 36.2 (Slate #64748b)
+                   Ready for Pickup: 3/43 = 7.0% -> 27.2 (Purple #a855f7)
+                   Awaiting Parts: 3/43 = 7.0% -> 27.2 (Orange #f97316)
+                   Overdue: 2/43 = 4.6% -> 17.9 (Red #ef4444)
+              -->
+<!-- Delivered: 24 (55.8%) -->
+<circle class="hover:stroke-[21] transition-all cursor-pointer" cx="80" cy="80" fill="transparent" r="62" stroke="#10b981" stroke-dasharray="217.4 389.5" stroke-dashoffset="0" stroke-width="18"></circle>
+<!-- In Progress: 7 (16.3%) -->
+<circle class="hover:stroke-[21] transition-all cursor-pointer" cx="80" cy="80" fill="transparent" r="62" stroke="#3b82f6" stroke-dasharray="63.5 389.5" stroke-dashoffset="-217.4" stroke-width="18"></circle>
+<!-- Not Started: 4 (9.3%) -->
+<circle class="hover:stroke-[21] transition-all cursor-pointer" cx="80" cy="80" fill="transparent" r="62" stroke="#64748b" stroke-dasharray="36.2 389.5" stroke-dashoffset="-280.9" stroke-width="18"></circle>
+<!-- Ready for Pickup: 3 (7.0%) -->
+<circle class="hover:stroke-[21] transition-all cursor-pointer" cx="80" cy="80" fill="transparent" r="62" stroke="#a855f7" stroke-dasharray="27.2 389.5" stroke-dashoffset="-317.1" stroke-width="18"></circle>
+<!-- Awaiting Parts: 3 (7.0%) -->
+<circle class="hover:stroke-[21] transition-all cursor-pointer" cx="80" cy="80" fill="transparent" r="62" stroke="#f97316" stroke-dasharray="27.2 389.5" stroke-dashoffset="-344.3" stroke-width="18"></circle>
+<!-- Overdue: 2 (4.6%) -->
+<circle class="hover:stroke-[21] transition-all cursor-pointer" cx="80" cy="80" fill="transparent" r="62" stroke="#ef4444" stroke-dasharray="18 389.5" stroke-dashoffset="-371.5" stroke-width="18"></circle>
+</svg>
+<!-- Center Total Metric -->
+<div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">43</span>
+<span class="font-label-xs-caps text-[10px] uppercase text-on-surface-variant tracking-wider leading-tight">Active &amp;<br>Logged</span>
+</div>
+</div>
+<!-- Color Legends Specification with Exact Colors -->
+<div class="sm:col-span-7 flex flex-col gap-2">
+<!-- Delivered -->
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#10b981] shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span>
+<span class="font-body-md text-body-md text-on-surface">Delivered</span>
+</div>
+<div class="flex items-center gap-2 font-label-md text-label-md">
+<span class="font-bold text-on-surface">24</span>
+<span class="text-on-surface-variant text-[12px] font-mono">55.8%</span>
+</div>
+</div>
+<!-- In Progress -->
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#3b82f6] shadow-[0_0_8px_rgba(59,130,246,0.4)]"></span>
+<span class="font-body-md text-body-md text-on-surface">In Progress</span>
+</div>
+<div class="flex items-center gap-2 font-label-md text-label-md">
+<span class="font-bold text-on-surface">7</span>
+<span class="text-on-surface-variant text-[12px] font-mono">16.3%</span>
+</div>
+</div>
+<!-- Not Started -->
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#64748b]"></span>
+<span class="font-body-md text-body-md text-on-surface">Not Started</span>
+</div>
+<div class="flex items-center gap-2 font-label-md text-label-md">
+<span class="font-bold text-on-surface">4</span>
+<span class="text-on-surface-variant text-[12px] font-mono">9.3%</span>
+</div>
+</div>
+<!-- Ready for Pickup -->
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#a855f7]"></span>
+<span class="font-body-md text-body-md text-on-surface">Ready for Pickup</span>
+</div>
+<div class="flex items-center gap-2 font-label-md text-label-md">
+<span class="font-bold text-on-surface">3</span>
+<span class="text-on-surface-variant text-[12px] font-mono">7.0%</span>
+</div>
+</div>
+<!-- Awaiting Parts -->
+<div class="flex items-center justify-between p-1.5 rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#f97316]"></span>
+<span class="font-body-md text-body-md text-on-surface">Awaiting Parts</span>
+</div>
+<div class="flex items-center gap-2 font-label-md text-label-md">
+<span class="font-bold text-on-surface">3</span>
+<span class="text-on-surface-variant text-[12px] font-mono">7.0%</span>
+</div>
+</div>
+<!-- Overdue (Red) -->
+<div class="flex items-center justify-between p-1.5 rounded-lg bg-error-container/20">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#ef4444] animate-pulse"></span>
+<span class="font-body-md text-body-md text-error font-medium">Overdue</span>
+</div>
+<div class="flex items-center gap-2 font-label-md text-label-md">
+<span class="font-bold text-error">2</span>
+<span class="text-error/80 text-[12px] font-mono">4.6%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty Donut State -->
+<div class="hidden flex-col items-center justify-center p-space-lg text-center my-auto" id="donut-empty-container">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-space-sm">
+<span class="material-symbols-outlined text-[28px]">donut_large</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface font-semibold">No Status Records</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs mt-1">No active job status transitions recorded for this timeframe.</p>
+</div>
+<div class="pt-space-md flex items-center justify-between text-on-surface-variant font-label-xs-caps text-label-xs-caps">
+<span class="">Priority Alert: 2 overdue bay tickets</span>
+<span class="text-secondary font-semibold">Completion Rate: 82.7%</span>
+</div>
+</div>
+</section>
+<!-- Sales & Revenue Audit Section -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-md flex flex-col gap-space-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Sales &amp; Collections</h2>
+<div class="flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-high font-label-xs-caps text-label-xs-caps">
+<span class="text-on-surface-variant uppercase">Total Sales:</span>
+<span class="text-primary font-bold">GYD 1,485,000</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-high font-label-xs-caps text-label-xs-caps">
+<span class="text-on-surface-variant uppercase">Billed Jobs:</span>
+<span class="text-on-surface font-bold">24 jobs</span>
+</div>
+</div>
+<!-- Table / Chart Toggle -->
+<div class="no-print flex items-center p-0.5 rounded-lg bg-surface-container">
+<button class="flex items-center gap-1 px-space-md py-1.5 rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider bg-surface-container-highest text-primary font-bold shadow-sm" id="btn-view-table" onclick="toggleSalesView('table')">
+<span class="material-symbols-outlined text-[16px]">table_rows</span>
+<span class="">Table View</span>
+</button>
+<button class="flex items-center gap-1 px-space-md py-1.5 rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface" id="btn-view-chart" onclick="toggleSalesView('chart')">
+<span class="material-symbols-outlined text-[16px]">show_chart</span>
+<span class="">Revenue Trend</span>
+</button>
+</div>
+</div>
+<!-- Content View: Sales Table -->
+<div class="w-full overflow-x-auto" id="sales-view-table">
+<table class="w-full text-left font-body-md text-body-md border-collapse">
+<thead>
+<tr class="bg-surface-container-highest/60 text-on-surface-variant font-label-xs-caps text-label-xs-caps uppercase tracking-wider">
+<th class="p-space-md rounded-l-lg">Payment Date</th>
+<th class="p-space-md">Job ID</th>
+<th class="p-space-md">Customer Name</th>
+<th class="p-space-md">Vehicle</th>
+<th class="p-space-md text-right">Amount Paid (GYD)</th>
+<th class="p-space-md rounded-r-lg text-right no-print">Receipt Document</th>
+</tr>
+</thead>
+<tbody class="text-on-surface divide-y divide-transparent">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="p-space-md text-on-surface-variant font-mono text-[13px]">Oct 31, 2026</td>
+<td class="p-space-md font-semibold text-primary">#J-2026-042</td>
+<td class="p-space-md font-medium text-on-surface">Marcus Reid</td>
+<td class="p-space-md text-on-surface-variant text-[13px]">Toyota Hilux 2.8 D-4D</td>
+<td class="p-space-md text-right font-headline-sm text-headline-sm font-bold text-on-surface font-mono">GYD 145,000</td>
+<td class="p-space-md text-right no-print">
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-fixed font-label-xs-caps text-label-xs-caps uppercase tracking-wider px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high transition-colors">
+<span class="">View PDF</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="p-space-md text-on-surface-variant font-mono text-[13px]">Oct 30, 2026</td>
+<td class="p-space-md font-semibold text-primary">#J-2026-040</td>
+<td class="p-space-md font-medium text-on-surface">Elena Rostova</td>
+<td class="p-space-md text-on-surface-variant text-[13px]">Honda CR-V 1.5T AWD</td>
+<td class="p-space-md text-right font-headline-sm text-headline-sm font-bold text-on-surface font-mono">GYD 82,500</td>
+<td class="p-space-md text-right no-print">
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-fixed font-label-xs-caps text-label-xs-caps uppercase tracking-wider px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high transition-colors">
+<span class="">View PDF</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="p-space-md text-on-surface-variant font-mono text-[13px]">Oct 29, 2026</td>
+<td class="p-space-md font-semibold text-primary">#J-2026-038</td>
+<td class="p-space-md font-medium text-on-surface">Tariq Jordan</td>
+<td class="p-space-md text-on-surface-variant text-[13px]">Ford Ranger Wildtrak 3.2</td>
+<td class="p-space-md text-right font-headline-sm text-headline-sm font-bold text-on-surface font-mono">GYD 210,000</td>
+<td class="p-space-md text-right no-print">
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-fixed font-label-xs-caps text-label-xs-caps uppercase tracking-wider px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high transition-colors">
+<span class="">View PDF</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="p-space-md text-on-surface-variant font-mono text-[13px]">Oct 28, 2026</td>
+<td class="p-space-md font-semibold text-primary">#J-2026-035</td>
+<td class="p-space-md font-medium text-on-surface">Derrick Paul</td>
+<td class="p-space-md text-on-surface-variant text-[13px]">Nissan Navara NP300</td>
+<td class="p-space-md text-right font-headline-sm text-headline-sm font-bold text-on-surface font-mono">GYD 95,000</td>
+<td class="p-space-md text-right no-print">
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-fixed font-label-xs-caps text-label-xs-caps uppercase tracking-wider px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high transition-colors">
+<span class="">View PDF</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="p-space-md text-on-surface-variant font-mono text-[13px]">Oct 27, 2026</td>
+<td class="p-space-md font-semibold text-primary">#J-2026-031</td>
+<td class="p-space-md font-medium text-on-surface">Sandra Bowen</td>
+<td class="p-space-md text-on-surface-variant text-[13px]">Mazda CX-5 Skyactiv-G</td>
+<td class="p-space-md text-right font-headline-sm text-headline-sm font-bold text-on-surface font-mono">GYD 168,500</td>
+<td class="p-space-md text-right no-print">
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-fixed font-label-xs-caps text-label-xs-caps uppercase tracking-wider px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high transition-colors">
+<span class="">View PDF</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Content View: Sales Chart (Hidden by default) -->
+<div class="hidden flex-col gap-space-md w-full pt-space-md" id="sales-view-chart">
+<div class="h-64 w-full bg-surface-container rounded-lg p-space-md relative flex flex-col justify-end">
+<svg class="w-full h-44 overflow-visible" preserveAspectRatio="none" viewBox="0 0 500 120">
+<defs>
+<linearGradient id="revenueGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#14b8a6" stop-opacity="0.35"></stop>
+<stop offset="100%" stop-color="#14b8a6" stop-opacity="0.0"></stop>
+</linearGradient>
+</defs>
+<!-- Area Gradient Fill -->
+<polygon fill="url(#revenueGrad)" points="10,100 80,75 160,85 240,40 320,60 400,20 480,30 480,115 10,115"></polygon>
+<!-- Line Stroke -->
+<polyline fill="none" points="10,100 80,75 160,85 240,40 320,60 400,20 480,30" stroke="#4fdbc8" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+<!-- Data Points -->
+<circle cx="10" cy="100" fill="#4fdbc8" r="4"></circle>
+<circle cx="80" cy="75" fill="#4fdbc8" r="4"></circle>
+<circle cx="160" cy="85" fill="#4fdbc8" r="4"></circle>
+<circle cx="240" cy="40" fill="#71f8e4" r="5"></circle>
+<circle cx="320" cy="60" fill="#4fdbc8" r="4"></circle>
+<circle cx="400" cy="20" fill="#71f8e4" r="6"></circle>
+<circle cx="480" cy="30" fill="#4fdbc8" r="4"></circle>
+</svg>
+<div class="flex justify-between items-center text-on-surface-variant font-label-xs-caps text-[11px] pt-space-xs uppercase border-t border-surface-container-high">
+<span class="">26 Oct (GYD 168k)</span>
+<span class="">27 Oct</span>
+<span class="">28 Oct (GYD 95k)</span>
+<span class="">29 Oct (GYD 210k)</span>
+<span class="">30 Oct</span>
+<span class="">31 Oct (GYD 145k)</span>
+<span class="">1 Nov</span>
+</div>
+</div>
+</div>
+<!-- Empty Sales State Replacement -->
+<div class="hidden flex-col items-center justify-center p-space-xl text-center py-16" id="sales-view-empty">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-space-md">
+<span class="material-symbols-outlined text-[32px]">receipt_long</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">No sales recorded for this period</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm mt-1 mb-space-md">
+          There are no settled invoices or payments processed within 26 Oct to 1 Nov 2026.
+        </p>
+<button class="px-space-lg py-2 rounded-lg bg-surface-container-high text-primary hover:bg-surface-bright font-label-md text-label-md font-semibold transition-colors" onclick="setUIState('default')">
+          View Standard Activity
+        </button>
+</div>
+<!-- Bottom Pagination / Summary -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-sm text-on-surface-variant font-label-xs-caps text-label-xs-caps" id="sales-footer-meta">
+<span class="">Showing 5 of 24 completed invoices for the selected period</span>
+<button class="no-print text-primary hover:underline font-semibold flex items-center gap-1">
+          Export Invoices to CSV
+          <span class="material-symbols-outlined text-[14px]">download</span>
+</button>
+</div>
+</section>
+<!-- Missed Appointments Section (Immediate Action Items) -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-md flex flex-col gap-space-md" id="missed-appointments-section">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-error-container/30 text-error flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">event_busy</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold flex items-center gap-2">
+              Missed Appointments
+              <span class="px-2 py-0.5 rounded-full bg-error-container/40 text-error text-[11px] font-mono">2 unconfirmed</span>
+</h2>
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-error">Unscheduled follow-up dispatch needed</span>
+</div>
+</div>
+<div class="no-print">
+<span class="px-space-md py-1 rounded bg-surface-container font-label-xs-caps text-label-xs-caps uppercase text-on-surface-variant">Priority: High</span>
+</div>
+</div>
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left font-body-md text-body-md">
+<thead>
+<tr class="bg-surface-container-highest/40 text-on-surface-variant font-label-xs-caps text-label-xs-caps uppercase tracking-wider">
+<th class="p-space-md rounded-l-lg">Customer Contact</th>
+<th class="p-space-md">Scheduled Slot</th>
+<th class="p-space-md">Requested Service</th>
+<th class="p-space-md text-right rounded-r-lg no-print">Resolution Actions</th>
+</tr>
+</thead>
+<tbody class="text-on-surface divide-y divide-transparent">
+<!-- Missed Item 1 -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-[13px]">
+                    KJ
+                  </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Kevin Jagdeo</span>
+<span class="font-label-xs-caps text-[11px] text-on-surface-variant">+592 612-4890</span>
+</div>
+</div>
+</td>
+<td class="p-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cancel</span> Oct 28, 2026
+                  </span>
+<span class="text-on-surface-variant text-[12px]">11:00 AM (Slot 3)</span>
+</div>
+</td>
+<td class="p-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Transmission Diagnostic &amp; Fluid Check</span>
+<span class="text-on-surface-variant text-[12px] italic">Bay 2 assigned · Toyota Prado TX</span>
+</div>
+</td>
+<td class="p-space-md text-right no-print">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-xs-caps text-label-xs-caps uppercase tracking-wider transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">call</span>
+<span class="">Contact</span>
+</button>
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary font-label-xs-caps text-label-xs-caps uppercase tracking-wider font-semibold transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_add_on</span>
+<span class="">Reschedule</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Missed Item 2 -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="p-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-[13px]">
+                    AP
+                  </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Amara Phillips</span>
+<span class="font-label-xs-caps text-[11px] text-on-surface-variant">+592 684-2103</span>
+</div>
+</div>
+</td>
+<td class="p-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cancel</span> Oct 30, 2026
+                  </span>
+<span class="text-on-surface-variant text-[12px]">02:30 PM (Slot 5)</span>
+</div>
+</td>
+<td class="p-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Alternator Pulley Whine &amp; Belt Replacement</span>
+<span class="text-on-surface-variant text-[12px] italic">Bay 1 assigned · Isuzu D-Max</span>
+</div>
+</td>
+<td class="p-space-md text-right no-print">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-xs-caps text-label-xs-caps uppercase tracking-wider transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">call</span>
+<span class="">Contact</span>
+</button>
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary font-label-xs-caps text-label-xs-caps uppercase tracking-wider font-semibold transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_add_on</span>
+<span class="">Reschedule</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Operational Audit Disclaimer & System Watermark -->
+<div class="flex flex-col sm:flex-row items-center justify-between text-on-surface-variant font-label-xs-caps text-label-xs-caps pt-space-lg pb-space-xl border-t border-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+<span class="">AutoTrack Enterprise Telemetry System · Report hash: #RPT-2026-W44-SECURE</span>
+</div>
+<div class="flex items-center gap-space-md mt-2 sm:mt-0">
+<span class="">Generated by Fred (Admin)</span>
+<span class="">Exported UTC-04:00</span>
+</div>
+</div>
+</div>
+<!-- Interactive State Engine Script -->
+<script>
+    function setUIState(state) {
+      // Dev pill active button styling
+      const buttons = ['default', 'empty-charts', 'empty-sales', 'loading', 'error'];
+      buttons.forEach(b => {
+        const btn = document.getElementById('btn-state-' + b);
+        if (btn) {
+          if (b === state) {
+            btn.className = "px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-primary-container text-on-primary-container font-bold shadow-sm";
+          } else {
+            btn.className = "px-space-md py-space-xs rounded-lg font-label-xs-caps text-label-xs-caps transition-colors bg-surface-container-high text-on-surface-variant hover:text-on-surface";
+          }
+        }
+      });
+
+      // View Elements
+      const mainContent = document.getElementById('state-main-content');
+      const loadingView = document.getElementById('state-loading-view');
+      const errorView = document.getElementById('state-error-view');
+
+      const chartJobs = document.getElementById('chart-jobs-container');
+      const chartJobsEmpty = document.getElementById('chart-jobs-empty');
+      const donutContent = document.getElementById('donut-content-container');
+      const donutEmpty = document.getElementById('donut-empty-container');
+
+      const salesTable = document.getElementById('sales-view-table');
+      const salesChart = document.getElementById('sales-view-chart');
+      const salesEmpty = document.getElementById('sales-view-empty');
+      const salesFooter = document.getElementById('sales-footer-meta');
+
+      // Reset visibilities
+      mainContent.classList.remove('hidden');
+      loadingView.classList.add('hidden');
+      loadingView.classList.remove('flex');
+      errorView.classList.add('hidden');
+      errorView.classList.remove('flex');
+
+      chartJobs.classList.remove('hidden');
+      chartJobsEmpty.classList.add('hidden');
+      chartJobsEmpty.classList.remove('flex');
+      donutContent.classList.remove('hidden');
+      donutEmpty.classList.add('hidden');
+      donutEmpty.classList.remove('flex');
+
+      salesTable.classList.remove('hidden');
+      salesChart.classList.add('hidden');
+      salesEmpty.classList.add('hidden');
+      salesEmpty.classList.remove('flex');
+      salesFooter.classList.remove('hidden');
+
+      if (state === 'loading') {
+        mainContent.classList.add('hidden');
+        loadingView.classList.remove('hidden');
+        loadingView.classList.add('flex');
+      } else if (state === 'error') {
+        mainContent.classList.add('hidden');
+        errorView.classList.remove('hidden');
+        errorView.classList.add('flex');
+      } else if (state === 'empty-charts') {
+        chartJobs.classList.add('hidden');
+        chartJobsEmpty.classList.remove('hidden');
+        chartJobsEmpty.classList.add('flex');
+
+        donutContent.classList.add('hidden');
+        donutEmpty.classList.remove('hidden');
+        donutEmpty.classList.add('flex');
+      } else if (state === 'empty-sales') {
+        salesTable.classList.add('hidden');
+        salesChart.classList.add('hidden');
+        salesEmpty.classList.remove('hidden');
+        salesEmpty.classList.add('flex');
+        salesFooter.classList.add('hidden');
+      }
+    }
+
+    function toggleSalesView(view) {
+      const btnTable = document.getElementById('btn-view-table');
+      const btnChart = document.getElementById('btn-view-chart');
+      const tableView = document.getElementById('sales-view-table');
+      const chartView = document.getElementById('sales-view-chart');
+      const emptyView = document.getElementById('sales-view-empty');
+
+      if (!emptyView.classList.contains('hidden')) {
+        return; // Don't flip while in forced empty sales dev mode
+      }
+
+      if (view === 'table') {
+        btnTable.className = "flex items-center gap-1 px-space-md py-1.5 rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider bg-surface-container-highest text-primary font-bold shadow-sm";
+        btnChart.className = "flex items-center gap-1 px-space-md py-1.5 rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface";
+        tableView.classList.remove('hidden');
+        chartView.classList.add('hidden');
+        chartView.classList.remove('flex');
+      } else {
+        btnChart.className = "flex items-center gap-1 px-space-md py-1.5 rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider bg-surface-container-highest text-primary font-bold shadow-sm";
+        btnTable.className = "flex items-center gap-1 px-space-md py-1.5 rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface";
+        tableView.classList.add('hidden');
+        chartView.classList.remove('hidden');
+        chartView.classList.add('flex');
+      }
+    }
+
+    function selectPeriod(el, periodName) {
+      document.querySelectorAll('.period-tab').forEach(tab => {
+        tab.className = "period-tab px-space-md py-space-xs rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors";
+      });
+      el.className = "period-tab active-period px-space-md py-space-xs rounded-md font-label-xs-caps text-label-xs-caps uppercase tracking-wider bg-surface-container-highest text-primary font-bold shadow-sm";
+    }
+  </script>
+</div></main></div>
+
+</body></html>
